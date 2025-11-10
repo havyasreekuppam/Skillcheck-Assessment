@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup | Skillcheck</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <style>
+    /* Icon font for GitHub icon */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+    /* Add custom dropdown styles */
+    .custom-dropdown-toggle::after {
+        content: '▼';
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 10px;
+        color: #fff;
+        pointer-events: none;
+    }
+    .custom-dropdown-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #1f1c2c; /* Dark background */
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 8px;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 10;
+        display: none;
+    }
+    .custom-dropdown-options.open {
+        display: block;
+    }
+    .custom-dropdown-option {
+        padding: 10px 15px;
+        cursor: pointer;
+        color: #fff; /* White text */
+        font-size: 14px;
+    }
+    .custom-dropdown-option:hover {
+        background: #4e4376; /* Hover color */
+    }
+  </style>
+</head>
+<body class="auth-page">
+  <canvas id="network"></canvas>
+
+  <div class="auth-container">
+    <div class="brand">
+      <h1 class="brand-name">Skillcheck</h1>
+      <p class="tagline">Your Skills, Your Score, Your Future.</p>
+    </div>
+
+    <div class="auth-card">
+      <h2 class="title">Create Account ✨</h2>
+      <p class="subtitle">Join Skillcheck to explore jobs & courses</p>
+
+      
+      <div class="input-group" style="position: relative;">
+          <label for="role">I am a</label>
+          
+          <div class="custom-dropdown">
+            <div 
+              class="custom-dropdown-toggle" 
+              id="roleDropdownToggle" 
+              tabindex="0"
+              style="
+                background: rgba(255, 255, 255, 0.1); 
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                color: #fff;
+                padding: 10px 15px;
+                border-radius: 8px;
+                cursor: pointer;
+                min-height: 25px;
+                display: flex;
+                align-items: center;
+                position: relative;
+                font-size: 14px; /* Integrated styling */
+              "
+            >
+              Select your role
+            </div>
+            
+            <div class="custom-dropdown-options" id="roleDropdownOptions">
+              <div class="custom-dropdown-option" data-value="student">Student</div>
+              <div class="custom-dropdown-option" data-value="jobseeker">Job Seeker</div>
+              <div class="custom-dropdown-option" data-value="employer">Employer</div>
+            </div>
+          </div>
+          <input type="hidden" id="role" name="role" value="" required>
+      </div>
+      
+      
+      <form id="signupForm" action="#" method="POST">
+        
+        <div class="input-group">
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" name="fullname" placeholder="Your Name" required>
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Create a password" required>
+        </div>
+
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+      
+      <div class="social-login-container">
+        <p class="social-separator">OR SIGN UP WITH</p>
+        <button type="button" class="social-btn google" id="googleLogin">
+          <img src="Google.png" alt="Google Icon" /> Google
+        </button>
+        <button type="button" class="social-btn github" id="githubLogin">
+          <i class="fab fa-github" style="font-size: 18px; margin-right: 10px;"></i> GitHub
+        </button>
+        <button type="button" class="social-btn apple" id="appleLogin">
+          <img src="Apple.png" alt="Apple Icon" /> Apple
+        </button>
+        <button type="button" class="social-btn microsoft" id="microsoftLogin">
+          <img src="Microsoft.png" alt="Microsoft Icon" /> Microsoft
+        </button>
+      </div>
+
+      <p class="switch-text">
+        Already have an account? <a class="dont-have" href="login.html">Login</a>
+      </p>
+    </div>
+  </div>
+
+<script src="network.js"></script>
+
+<script>
+    // Helper function to generate initials
+    const getInitials = (name, email) => {
+        if (name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+        return email ? email[0].toUpperCase() : 'JD';
+    };
+    
+    // --- Custom Dropdown Logic ---
+    const toggle = document.getElementById('roleDropdownToggle');
+    const optionsContainer = document.getElementById('roleDropdownOptions');
+    const hiddenRoleInput = document.getElementById('role');
+
+    // Toggle dropdown open/close
+    toggle.addEventListener('click', () => {
+        optionsContainer.classList.toggle('open');
+    });
+
+    // Handle option selection
+    optionsContainer.querySelectorAll('.custom-dropdown-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            const text = this.textContent;
+
+            toggle.textContent = text;
+            hiddenRoleInput.value = value; // Set the value for form submission
+            optionsContainer.classList.remove('open');
+        });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown') && !e.target.closest('.social-btn')) {
+            optionsContainer.classList.remove('open');
+        }
+    });
+
+    // --- Firebase/Auth Logic ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCT4asFJdJsHQONICmFatkpMhvkSSxwFJ0",
+        authDomain: "skillcheck-9507a.firebaseapp.com",
+        projectId: "skillcheck-9507a",
+        storageBucket: "skillcheck-9507a.firebasestorage.app",
+        messagingSenderId: "1031470127995",
+        appId: "1:1031470127995:web:281b8a308477cf34da7bde",
+        measurementId: "G-BMN8R7ZFZK"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = app.auth();
+
+    // --- Core Signup Handler for ALL methods (Social & Manual) ---
+    const processSignup = (user, role, name, email) => {
+        // Save dynamic data to Local Storage
+        localStorage.setItem('currentUser', JSON.stringify({
+            name: name,
+            email: email,
+            initials: getInitials(name, email),
+            role: role,
+            userGoal: 'Web Developer' 
+        }));
+
+        alert(`User ${name} created successfully! Please complete your profile.`);
+        
+        if (role === 'employer') {
+            window.location.href = 'recruiter.html'; 
+        } else {
+            alert('Redirecting to Goal Setting. After setting your goal, you will take an assessment.');
+            window.location.href = 'main.html';
+        }
+    };
+    
+    // --- Social Signup Handlers ---
+    const signInWithProvider = (provider) => {
+        const role = hiddenRoleInput.value;
+        
+        // CRITICAL CHECK: Ensure a role is selected before initiating social login
+        if (!role) {
+            alert('Please select your role (I am a...) before signing up with a social provider.');
+            return;
+        }
+
+        auth.signInWithPopup(provider)
+            .then((result) => {
+                const user = result.user;
+                const userName = user.displayName || user.email;
+                
+                // Use the successful Firebase user data and the pre-selected role
+                processSignup(user, role, userName, user.email);
+            })
+            .catch((error) => {
+                alert(`Social Signup Failed: ${error.message}`);
+                console.error(error);
+            });
+    };
+
+    document.getElementById('googleLogin')?.addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        signInWithProvider(provider);
+    });
+
+    document.getElementById('appleLogin')?.addEventListener('click', () => {
+        const provider = new firebase.auth.OAuthProvider('apple.com');
+        signInWithProvider(provider);
+    });
+
+    document.getElementById('microsoftLogin')?.addEventListener('click', () => {
+        const provider = new firebase.auth.OAuthProvider('microsoft.com');
+        signInWithProvider(provider);
+    });
+    
+    // NEW GITHUB HANDLER
+    document.getElementById('githubLogin')?.addEventListener('click', () => {
+        const provider = new firebase.auth.GithubAuthProvider();
+        signInWithProvider(provider);
+    });
+    // END NEW GITHUB HANDLER
+
+    // --- Manual Email/Password Signup Handler ---
+    document.getElementById('signupForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const role = hiddenRoleInput.value; // Use value from hidden input
+        const email = document.getElementById('email').value;
+        const fullname = document.getElementById('fullname').value;
+        const password = document.getElementById('password').value;
+
+        if (!role) {
+            alert('Please select a role (I am a...) before signing up.');
+            return;
+        }
+
+        // Simulating successful Firebase email/password registration
+        processSignup(null, role, fullname, email); // Simulating successful registration
+    });
+</script>
+</body>
+</html>

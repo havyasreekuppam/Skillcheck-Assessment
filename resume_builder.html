@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Competency Diagnostic & Resume Builder</title>
+  <style>
+    body {
+      background-color: #1b1530;
+      color: #f8f8f8;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #f7b733;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      background-color: #6c5ce7;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #a29bfe;
+    }
+    .section {
+      background-color: #2b2340;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .project-block {
+      background-color: #3c2d58;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Smart Competency Diagnostic & Resume Builder</h1>
+
+  <!-- Personal Info -->
+  <div class="section">
+    <h2>Personal Details</h2>
+    <input type="text" id="name" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email">
+    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="url" id="linkedin" placeholder="LinkedIn URL">
+    <input type="url" id="github" placeholder="GitHub URL">
+  </div>
+
+  <!-- Professional Summary -->
+  <div class="section">
+    <h2>Professional Summary</h2>
+    <textarea id="summary" rows="3" placeholder="Write a short professional summary..."></textarea>
+  </div>
+
+  <!-- Education -->
+  <div class="section">
+    <h2>Education</h2>
+    <input type="text" id="degree" placeholder="Degree (e.g. B.Tech in CSE - XYZ University)">
+    <input type="text" id="inter" placeholder="Intermediate (e.g. MPC - ABC College)">
+    <input type="text" id="school" placeholder="Schooling (e.g. 10th - DEF School)">
+  </div>
+
+  <!-- Technical Skills -->
+  <div class="section">
+    <h2>Technical Skills</h2>
+    <input type="text" id="programming" placeholder="Programming Languages (e.g. Python, Java, C++)">
+    <input type="text" id="tools" placeholder="Tools (e.g. Git, VS Code, Jupyter)">
+    <input type="text" id="frameworks" placeholder="Libraries/Frameworks (e.g. TensorFlow, React, Flask)">
+  </div>
+
+  <!-- Certifications -->
+  <div class="section">
+    <h2>Certifications</h2>
+    <textarea id="certifications" rows="3" placeholder="List certifications separated by commas..."></textarea>
+  </div>
+
+  <!-- Projects -->
+  <div class="section">
+    <h2>Projects</h2>
+    <button id="addProjectBtn">Add Project</button>
+    <div id="projectsContainer"></div>
+  </div>
+
+  <div class="section">
+    <button id="generateResumeBtn">Generate Resume (Preview)</button>
+  </div>
+
+  <script>
+    const projectsContainer = document.getElementById("projectsContainer");
+    let projectCount = 0;
+
+    document.getElementById("addProjectBtn").addEventListener("click", function() {
+      if (projectCount >= 3) {
+        alert("You can only add up to 3 projects.");
+        return;
+      }
+
+      projectCount++;
+      const div = document.createElement("div");
+      div.classList.add("project-block");
+      div.innerHTML = `
+        <input type="text" placeholder="Project Title ${projectCount}" class="proj-title">
+        <textarea rows="3" placeholder="Project Description..." class="proj-desc"></textarea>
+      `;
+      projectsContainer.appendChild(div);
+    });
+
+    document.getElementById("generateResumeBtn").addEventListener("click", function() {
+      const data = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        linkedin: document.getElementById("linkedin").value.trim(),
+        github: document.getElementById("github").value.trim(),
+        summary: document.getElementById("summary").value.trim(),
+        education: {
+          degree: document.getElementById("degree").value.trim(),
+          inter: document.getElementById("inter").value.trim(),
+          school: document.getElementById("school").value.trim(),
+        },
+        skills: {
+          programming: document.getElementById("programming").value.trim(),
+          tools: document.getElementById("tools").value.trim(),
+          frameworks: document.getElementById("frameworks").value.trim(),
+        },
+        certifications: document.getElementById("certifications").value.split(",").map(c => c.trim()).filter(c => c),
+        projects: []
+      };
+
+      document.querySelectorAll(".project-block").forEach(block => {
+        const title = block.querySelector(".proj-title").value.trim();
+        const desc = block.querySelector(".proj-desc").value.trim();
+        if (title && desc) {
+          data.projects.push({ title, desc });
+        }
+      });
+
+      if (!data.name || !data.email || !data.phone) {
+        alert("Please fill out personal details before generating resume!");
+        return;
+      }
+
+      localStorage.setItem("resumeData", JSON.stringify(data));
+      window.location.href = "resume_preview.html";
+    });
+  </script>
+</body>
+</html>

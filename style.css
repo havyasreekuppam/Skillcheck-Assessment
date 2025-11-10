@@ -1,0 +1,1430 @@
+/* --- Add this property globally to the HTML selector --- */
+html {
+    scroll-behavior: smooth;
+}
+/* --- New styles for main.html and general responsiveness --- */
+
+body {
+    /* To allow scrolling on main content pages */
+    overflow-y: auto; 
+    /* Center only for auth pages, not main dashboard */
+    align-items: flex-start; 
+    justify-content: flex-start;
+    min-height: 100vh;
+    background-color: #0f172a;
+    transition: margin-left 0.3s ease;
+}
+
+/* --- Fix: Ensure auth pages are perfectly centered AND scrollable --- */
+body.auth-page {
+    display: flex; 
+    align-items: flex-start; /* Aligns content to the top */
+    justify-content: center; /* Centers horizontally */
+    overflow-y: auto; /* ALLOW SCROLLING on the body when content is too tall */
+    padding: 20px 20px; 
+}
+main {
+    padding: 20px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 20px auto;
+    color: #fff; /* Text color for main content */
+}
+
+/* Navigation Bar */
+.navbar {
+    background: #1f1c2c;
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+    position: relative; 
+}
+
+/* Style for the Centered Website Name */
+.navbar .brand-center {
+    margin: 0 auto;
+    font-size: 20px; 
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    cursor: default;
+    /* Absolute positioning to truly center it */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 2; 
+}
+
+/* Nav Links Container (Hidden on mobile initially) */
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin-left: auto; 
+    z-index: 5; 
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 15px;
+    transition: background 0.3s ease;
+    border-radius: 5px;
+}
+
+.navbar a:hover {
+    background: #4e4376;
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+    cursor: pointer;
+    z-index: 5; 
+}
+
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    background: #4e4376;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
+    border: 2px solid #fff;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    left: 0; /* Aligned to the left of the avatar */
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    min-width: 180px;
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.dropdown-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu a {
+    color: #333;
+    padding: 12px 15px;
+    display: block;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+    background: #f0f0f0;
+}
+
+.dropdown-header {
+    padding: 12px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4e4376;
+    border-bottom: 1px solid #eee;
+}
+
+/* --- HAMBURGER MENU STYLES --- */
+
+.menu-toggle {
+    display: none; /* Hide by default on desktop */
+    z-index: 6;
+    cursor: pointer;
+    font-size: 24px;
+    color: #fff;
+    padding: 5px;
+    margin-left: 20px; /* Space from other elements */
+}
+
+.sidebar-menu {
+    position: fixed;
+    top: 0;
+    right: 0; /* Starts off-screen to the right */
+    width: 250px; 
+    height: 100%;
+    background-color: #1f1c2c; 
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    padding-top: 60px; 
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-menu.open {
+    transform: translateX(0); /* Slides into view */
+}
+
+.sidebar-menu a {
+    display: block;
+    padding: 15px 20px;
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid #4e4376;
+}
+
+.sidebar-menu a:hover {
+    background: #4e4376;
+}
+
+/* Dashboard Sections */
+section {
+    padding: 30px;
+    margin-bottom: 25px;
+    background: #1f1c2c;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+section h2 {
+    color: #8be9fd; /* Light blue accent */
+    margin-bottom: 15px;
+    border-bottom: 2px solid #4e4376;
+    padding-bottom: 5px;
+}
+
+.score-card {
+    background: #4e4376;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.score-card h1 {
+    font-size: 48px;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.score-card p {
+    font-size: 16px;
+    color: #ddd;
+}
+
+/* --- Skill Breakdown Styling --- */
+
+.skill-breakdown {
+    margin-top: 30px;
+    padding: 20px;
+    background: #191625; 
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skill-breakdown h3 {
+    color: #fff;
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #4e4376;
+    padding-bottom: 10px;
+}
+
+.skill-item {
+    margin-bottom: 15px;
+}
+
+.skill-name {
+    display: block;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.score-bar {
+    background: rgba(255, 255, 255, 0.1);
+    height: 25px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.score-fill {
+    height: 100%;
+    /* Default: High score color */
+    background-color: #00b894; /* Good/High Score Color (Green) */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    font-weight: 700;
+    color: #191625; 
+    transition: width 0.5s ease;
+    min-width: 40px; 
+}
+
+/* Color Coding for Performance */
+.score-fill.average {
+    background-color: #f7b731; /* Average Score Color (Yellow/Gold) */
+}
+
+.score-fill.poor {
+    background-color: #e84118; /* Low Score Color (Red) */
+    color: #fff;
+}
+
+
+/* --- Course & Job Card Grid Styling --- */
+
+.course-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between cards */
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.course-card {
+    background: #2b334d; /* Slightly lighter dark background than the main section */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    flex-grow: 1; /* Allows cards to fill space */
+    min-width: 280px; /* Minimum width for responsiveness */
+    max-width: calc(33.333% - 14px); /* Max 3 cards per row on large screens */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-5px); /* Lift the card on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.course-card h3 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.course-card .description {
+    color: #bbb;
+    font-size: 14px;
+    margin-bottom: 15px;
+    flex-grow: 1; /* Ensures content pushes the footer down */
+}
+
+.course-card .details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #8be9fd; /* Light blue accent */
+    margin-bottom: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.course-link {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    color: #f7b731 !important; /* Gold accent for the link */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.course-link:hover {
+    color: #fff !important;
+}
+
+/* --- Job Card Specific Styling --- */
+
+.job-card .company-name {
+    color: #f7b731; /* Gold accent for company name */
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.job-card .details .location {
+    color: #ccc;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.job-card .details .salary {
+    color: #00b894; /* Green accent for salary */
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.apply-btn:disabled {
+    cursor: not-allowed;
+    background-color: #6c757d !important;
+}
+
+
+/* Recruiter Form Styling (for recruiter.html & post_job.html) */
+.form-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 500px;
+    margin: 50px auto;
+}
+
+.form-container h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #2b2b2b;
+    text-align: center;
+}
+
+.form-container label {
+    display: block;
+    font-size: 14px;
+    margin-top: 25px;
+    margin-bottom: 6px;
+    color: #333;
+    text-align: left;
+}
+
+.form-container input[type="text"],
+.form-container input[type="number"],
+.form-container select,
+.form-container textarea,
+.form-container input[type="file"],
+.form-container .btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 14px;
+    resize: vertical;
+}
+
+/* FIX for invisible dropdown selection text is implemented in the HTML/JS now, 
+   but we keep the base styling for select */
+.auth-card select {
+    color: #fff; 
+}
+
+/* New button style for secondary/cancel action */
+.btn.secondary {
+    background-color: #6c757d; 
+    margin-top: 10px;
+}
+
+.btn.secondary:hover {
+    background-color: #5a6268;
+}
+
+.form-container textarea {
+    height: 100px;
+}
+
+.form-container button[type="submit"] {
+    margin-top: 25px;
+}
+
+
+/* Candidate List (for recruiter-dashboard.html) */
+.candidate-list {
+    list-style: none;
+    padding: 0;
+}
+
+.candidate-list li {
+    background: #2b334d;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.candidate-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.candidate-info h3 {
+    margin: 0;
+    color: #fff;
+}
+
+.candidate-info p {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: #bbb;
+}
+
+.candidate-score {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f7b731; /* Gold accent */
+}
+
+
+/* --- Footer Styling --- */
+.main-footer {
+    background-color: #1f1c2c;
+    color: #ccc;
+    padding: 40px 20px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.footer-brand {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-brand h3 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.footer-brand .copyright {
+    font-size: 12px;
+    margin-top: 20px;
+    color: #888;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+}
+
+.footer-links h4 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 2px solid #4e4376;
+    padding-bottom: 5px;
+    width: fit-content;
+}
+
+.footer-links a {
+    color: #ccc;
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #8be9fd; /* Light blue accent */
+}
+
+
+/* --- MODAL STYLES (MOVED FROM main2.html) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* HIGH Z-INDEX to ensure visibility */
+}
+
+.modal-content {
+    background: #1f1c2c; /* Dashboard background color */
+    color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-content h3 {
+    color: #8be9fd;
+    border-bottom: 2px solid #4e4376;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.modal-profile-summary p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.modal-actions .btn {
+    width: 48%; /* Space out the actions */
+    padding: 10px;
+    margin: 0;
+}
+
+.btn.reject {
+    background-color: #e84118; /* Red for Reject */
+}
+.btn.reject:hover {
+    background-color: #c23315;
+}
+
+.btn.delete {
+    background-color: #333; /* Darker for Delete */
+}
+.btn.delete:hover {
+    background-color: #111;
+}
+
+/* --- MOBILE SPECIFIC MEDIA QUERY (MODIFIED) --- */
+
+@media (max-width: 768px) {
+    /* 1. Show the Hamburger Icon */
+    .menu-toggle {
+        display: block;
+    }
+
+    /* 2. Hide the desktop links (Updated Selector) */
+    .navbar .nav-right,  /* Hides link block in main.html */
+    .navbar li.nav-links /* Hides link block in main2.html */
+    {
+        display: none; 
+    }
+    
+    /* 3. Ensure Navbar ul uses space-between for Profile & Hamburger */
+    .navbar ul {
+        justify-content: space-between;
+    }
+    
+    /* 4. Adjust positioning of the center brand */
+    .navbar .brand-center {
+        /* Remove absolute positioning to keep it in the flow */
+        position: static; 
+        transform: translateX(0);
+        margin: 0 auto; /* Center it horizontally between profile and hamburger */
+    }
+    
+    /* Responsive card layout adjustments */
+    .course-card {
+        max-width: 100%; /* 1 card per row on small screens */
+    }
+    
+    .auth-card {
+        padding: 20px 15px;
+    }
+    
+    /* Footer adjustments */
+    .footer-content {
+        justify-content: flex-start;
+    }
+    .footer-brand, .footer-links {
+        margin-bottom: 20px;
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+
+/* Styling for the Network Animation Canvas */
+#network {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; 
+    background: #0f172a; 
+}
+
+/* --- Container for Login/Signup (Auth Pages) --- */
+.auth-container {
+    z-index: 1; 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px;
+    margin: auto 0; 
+}
+
+/* --- Brand/Logo Text Styling --- */
+.brand {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    width: 100%;
+}
+
+
+/* ---------------------------------------------------- */
+/* --- LIQUID GLASS STYLE FOR .auth-card --- */
+/* ---------------------------------------------------- */
+.auth-card {
+    /* 1. Glass Effect */
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px);        
+    -webkit-backdrop-filter: blur(10px); 
+    
+    /* 2. Shape and Positioning */
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+    
+    /* 3. Content and Size (INCREASED MAX-WIDTH) */
+    padding: 40px;
+    width: 100%;
+    max-width: 550px; /* Increased width to fit 2 columns */
+    box-sizing: border-box;
+    color: #fff; 
+}
+
+/* Adjustments for text and inputs on the glass card */
+.auth-card .title,
+.auth-card .subtitle {
+    text-align: center; 
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.auth-card .input-group {
+    width: 100%; 
+    margin-bottom: 15px;
+}
+
+.auth-card label {
+    display: block; 
+    text-align: left; 
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); 
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"],
+.auth-card select { 
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff; 
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    height: 25px;
+    box-sizing: border-box;
+}
+
+.auth-card input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn {
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    background-color: #8b75d9;
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.btn:hover{
+    background-color: #8e44ad;
+}
+
+.switch-text {
+    text-align: center; 
+    margin-top: 20px;
+    color: #fff;
+}
+
+.dont-have{
+    color: #8b75d9;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* --- Social Login Styles (2x2 Grid Layout) --- */
+
+.social-login-container {
+    margin-top: 20px;
+    width: 100%;
+    /* NEW: Use flexbox for the grid layout */
+    display: flex;
+    flex-wrap: wrap; /* Allows buttons to wrap to the next line */
+    gap: 15px; /* Space between buttons */
+    justify-content: space-between; /* Ensures space between the two columns */
+}
+
+.social-btn {
+    /* Set button width for a 2-column layout */
+    width: calc(50% - 8px); /* 50% width minus half of the gap (15px / 2 = 7.5px, rounded to 8px for safety) */
+    padding: 10px;
+    margin-bottom: 0; /* Removed bottom margin since gap handles spacing */
+    
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+/* Ensure the social separator spans the full width */
+.social-separator {
+    width: 100%;
+    text-align: center;
+    font-size: small;
+}
+
+.social-btn img, .social-btn i {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+/* Google Style */
+.social-btn.google {
+    background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.google:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+/* Apple Style */
+.social-btn.apple {
+    background-color: #050505;
+    color: #fbfafa;
+    border-color: #ddd;
+}
+.social-btn.apple:hover {
+    background-color: #787777;
+    border: 2px solid #fdfdfd;
+}
+
+/* Microsoft Style */
+.social-btn.microsoft {
+    background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.microsoft:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+/* GitHub Style */
+.social-btn.github {
+    background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.github:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+
+/* --- MOBILE SPECIFIC MEDIA QUERY (Reverts to single column on small screens) --- */
+
+@media (max-width: 580px) { /* Trigger point below the new 550px card width */
+    .auth-card {
+        max-width: 90%; 
+    }
+    .social-login-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .social-btn {
+        width: 100%; /* Full width on mobile */
+    }
+}
+/* ... (rest of media queries and helper styles are unchanged) ... */
+
+
+/* Candidate List (for recruiter-dashboard.html) */
+.candidate-list {
+    list-style: none;
+    padding: 0;
+}
+
+.candidate-list li {
+    background: #2b334d;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.candidate-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.candidate-info h3 {
+    margin: 0;
+    color: #fff;
+}
+
+.candidate-info p {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: #bbb;
+}
+
+.candidate-score {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f7b731; /* Gold accent */
+}
+
+
+/* --- Footer Styling --- */
+.main-footer {
+    background-color: #1f1c2c;
+    color: #ccc;
+    padding: 40px 20px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.footer-brand {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-brand h3 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.footer-brand .copyright {
+    font-size: 12px;
+    margin-top: 20px;
+    color: #888;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+}
+
+.footer-links h4 {
+    color: #fff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 2px solid #4e4376;
+    padding-bottom: 5px;
+    width: fit-content;
+}
+
+.footer-links a {
+    color: #ccc;
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #8be9fd; /* Light blue accent */
+}
+
+
+/* --- MODAL STYLES (MOVED FROM main2.html) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* HIGH Z-INDEX to ensure visibility */
+}
+
+.modal-content {
+    background: #1f1c2c; /* Dashboard background color */
+    color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-content h3 {
+    color: #8be9fd;
+    border-bottom: 2px solid #4e4376;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.modal-profile-summary p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.modal-actions .btn {
+    width: 48%; /* Space out the actions */
+    padding: 10px;
+    margin: 0;
+}
+
+.btn.reject {
+    background-color: #e84118; /* Red for Reject */
+}
+.btn.reject:hover {
+    background-color: #c23315;
+}
+
+.btn.delete {
+    background-color: #333; /* Darker for Delete */
+}
+.btn.delete:hover {
+    background-color: #111;
+}
+
+/* --- MOBILE SPECIFIC MEDIA QUERY (MODIFIED) --- */
+
+@media (max-width: 768px) {
+    /* 1. Show the Hamburger Icon */
+    .menu-toggle {
+        display: block;
+    }
+
+    /* 2. Hide the desktop links (Updated Selector) */
+    .navbar .nav-right,  /* Hides link block in main.html */
+    .navbar li.nav-links /* Hides link block in main2.html */
+    {
+        display: none; 
+    }
+    
+    /* 3. Ensure Navbar ul uses space-between for Profile & Hamburger */
+    .navbar ul {
+        justify-content: space-between;
+    }
+    
+    /* 4. Adjust positioning of the center brand */
+    .navbar .brand-center {
+        /* Remove absolute positioning to keep it in the flow */
+        position: static; 
+        transform: translateX(0);
+        margin: 0 auto; /* Center it horizontally between profile and hamburger */
+    }
+    
+    /* Responsive card layout adjustments */
+    .course-card {
+        max-width: 100%; /* 1 card per row on small screens */
+    }
+    
+    .auth-card {
+        padding: 20px 15px;
+    }
+    
+    /* Footer adjustments */
+    .footer-content {
+        justify-content: flex-start;
+    }
+    .footer-brand, .footer-links {
+        margin-bottom: 20px;
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+
+/* Styling for the Network Animation Canvas */
+#network {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; 
+    background: #0f172a; 
+}
+
+/* --- Container for Login/Signup (Auth Pages) --- */
+.auth-container {
+    z-index: 1; 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px;
+    margin: auto 0; 
+}
+
+/* --- Brand/Logo Text Styling --- */
+.brand {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    width: 100%;
+}
+
+
+/* ---------------------------------------------------- */
+/* --- LIQUID GLASS STYLE FOR .auth-card --- */
+/* ---------------------------------------------------- */
+.auth-card {
+    /* 1. Glass Effect */
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px);        
+    -webkit-backdrop-filter: blur(10px); 
+    
+    /* 2. Shape and Positioning */
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+    
+    /* 3. Content and Size (INCREASED MAX-WIDTH) */
+    padding: 40px;
+    width: 100%;
+    max-width: 550px; /* Increased width to fit 2 columns */
+    box-sizing: border-box;
+    color: #fff; 
+}
+
+/* Adjustments for text and inputs on the glass card */
+.auth-card .title,
+.auth-card .subtitle {
+    text-align: center; 
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.auth-card .input-group {
+    width: 100%; 
+    margin-bottom: 15px;
+}
+
+.auth-card label {
+    display: block; 
+    text-align: left; 
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5); 
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"],
+.auth-card select { 
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff; 
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    height: 35px;
+    box-sizing: border-box;
+}
+
+.auth-card input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn {
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    background-color: #8b75d9;
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.btn:hover{
+    background-color: #8e44ad;
+}
+
+.switch-text {
+    text-align: center; 
+    margin-top: 20px;
+    color: #fff;
+}
+
+.dont-have{
+    color: #8b75d9;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* --- Social Login Styles (2x2 Grid Layout) --- */
+
+.social-login-container {
+    margin-top: 20px;
+    width: 100%;
+    /* NEW: Use flexbox for the grid layout */
+    display: flex;
+    flex-wrap: wrap; /* Allows buttons to wrap to the next line */
+    gap: 15px; /* Space between buttons */
+    justify-content: space-between; /* Ensures space between the two columns */
+}
+
+.social-btn {
+    /* Set button width for a 2-column layout */
+    width: calc(50% - 8px); /* 50% width minus half of the gap (15px / 2 = 7.5px, rounded to 8px for safety) */
+    padding: 10px;
+    margin-bottom: 0; /* Removed bottom margin since gap handles spacing */
+    
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+/* Ensure the social separator spans the full width */
+.social-separator {
+    width: 100%;
+}
+
+.social-btn img, .social-btn i {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+/* Google Style */
+.social-btn.google {
+    background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.google:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+/* Apple Style */
+.social-btn.apple {
+      background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.apple:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+/* Microsoft Style */
+.social-btn.microsoft {
+    background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.microsoft:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+/* GitHub Style */
+.social-btn.github {
+    background-color: #f7f4f4; 
+    color: #080000;
+    border: 2px solid #040404;
+}
+.social-btn.github:hover {
+    background-color: #838282; 
+    border: 3px solid #000000;
+}
+
+
+/* --- MODAL STYLES (MOVED FROM main2.html) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* HIGH Z-INDEX to ensure visibility */
+}
+
+.modal-content {
+    background: #1f1c2c; /* Dashboard background color */
+    color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-content h3 {
+    color: #8be9fd;
+    border-bottom: 2px solid #4e4376;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.modal-profile-summary p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.modal-actions .btn {
+    width: 48%; /* Space out the actions */
+    padding: 10px;
+    margin: 0;
+}
+
+.btn.reject {
+    background-color: #e84118; /* Red for Reject */
+}
+.btn.reject:hover {
+    background-color: #c23315;
+}
+
+.btn.delete {
+    background-color: #333; /* Darker for Delete */
+}
+.btn.delete:hover {
+    background-color: #111;
+}
+
+/* --- MOBILE SPECIFIC MEDIA QUERY (MODIFIED) --- */
+
+@media (max-width: 768px) {
+    /* 1. Show the Hamburger Icon */
+    .menu-toggle {
+        display: block;
+    }
+
+    /* 2. Hide the desktop links (Updated Selector) */
+    .navbar .nav-right,  /* Hides link block in main.html */
+    .navbar li.nav-links /* Hides link block in main2.html */
+    {
+        display: none; 
+    }
+    
+    /* 3. Ensure Navbar ul uses space-between for Profile & Hamburger */
+    .navbar ul {
+        justify-content: space-between;
+    }
+    
+    /* 4. Adjust positioning of the center brand */
+    .navbar .brand-center {
+        /* Remove absolute positioning to keep it in the flow */
+        position: static; 
+        transform: translateX(0);
+        margin: 0 auto; /* Center it horizontally between profile and hamburger */
+    }
+    
+    /* Responsive card layout adjustments */
+    .course-card {
+        max-width: 100%; /* 1 card per row on small screens */
+    }
+    
+    .auth-card {
+        padding: 20px 15px;
+    }
+    
+    /* Footer adjustments */
+    .footer-content {
+        justify-content: flex-start;
+    }
+    .footer-brand, .footer-links {
+        margin-bottom: 20px;
+        width: 100%;
+        min-width: auto;
+    }
+}

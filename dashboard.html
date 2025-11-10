@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Skillcheck | Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ======================= GLOBAL / UI MATCHES main.html ======================= */
+body {
+    background-color: #0b1220;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+}
+
+/* ===== Navbar (same UI as main.html) ===== */
+.navbar {
+    background-color: #111827;
+    padding: 1.2rem 2rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-brand {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #4A90E2;
+}
+
+/* Avatar circle */
+.profile-img {
+    width: 60px;
+    height: 60px;
+    background: #4A90E2;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 22px;
+    border: 3px solid white;
+}
+
+/* ===== Container ===== */
+.dashboard-container {
+    width: 85%;
+    margin: auto;
+    padding-top: 2rem;
+}
+
+/* Cards */
+.stats-grid {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 1.8rem;
+    border-radius: 16px;
+    width: 30%;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.card h2 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+canvas {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-brand">Skillcheck</div>
+    <div class="profile-img">HS</div>
+</nav>
+
+<div class="dashboard-container">
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="card">
+            <h2 id="latestScore">--%</h2>
+            <p>Latest Assessment Score</p>
+        </div>
+
+        <div class="card">
+            <h2 id="attempts">--</h2>
+            <p>Total Attempts</p>
+        </div>
+
+        <div class="card">
+            <h2 id="atsScore">--%</h2>
+            <p>Latest ATS Resume Score</p>
+        </div>
+    </div>
+
+    <!-- Line Chart -->
+    <canvas id="scoreTrendChart" height="100"></canvas>
+
+</div>
+
+<script>
+
+/* ======================================================
+   ✅ Load Dashboard Data (Backend + localStorage history)
+====================================================== */
+
+async function loadDashboard() {
+    let backendData = {
+        latestAssessment: "--",
+        attempts: "--",
+        latestATS: "--",
+        dates: [],
+        scores: []
+    };
+
+    /* ---------------- GET FROM BACKEND ---------------- */
+    try {
+        const res = await fetch("http://127.0.0.1:5000/api/dashboard-stats");
+        backendData = await res.json();
+        console.log("✅ Backend Dashboard Data:", backendData);
+    } catch (err) {
+        console.warn("⚠ Backend not running, using only localStorage data.");
+    }
+
+    /* ---------------- GET LOCAL STORAGE HISTORY ---------------- */
+    const history = JSON.parse(localStorage.getItem("assessmentHistory")) || [];
+    console.log("📌 LocalStorage Assessment History:", history);
+
+    if (history.length > 0) {
+        backendData.latestAssessment = history.at(-1).score;
+        backendData.attempts = history.length;
+        backendData.scores = history.map(h => h.score);
+        backendData.dates = history.map(h => h.date.split(",")[0]);
+    }
+
+    /* ---------------- RESUME ATS SCORE ---------------- */
+    const ats = localStorage.getItem("latestResumeATS");
+    if (ats) backendData.latestATS = ats;
+
+    /* ---------------- UPDATE UI ---------------- */
+    document.getElementById("latestScore").innerText = backendData.latestAssessment + "%";
+    document.getElementById("attempts").innerText = backendData.attempts;
+    document.getElementById("atsScore").innerText = backendData.latestATS + "%";
+
+    /* ---------------- SCORE TREND CHART ---------------- */
+    new Chart(document.getElementById("scoreTrendChart"), {
+        type: "line",
+        data: {
+            labels: backendData.dates,
+            datasets: [{
+                label: "Assessment Score History",
+                data: backendData.scores,
+                borderWidth: 3,
+                tension: 0.4,
+                borderColor: "#4A90E2",
+                pointBackgroundColor: "#4A90E2"
+            }]
+        },
+        options: {
+            plugins: { legend: { labels: { color: "#fff" }}},
+            scales: {
+                x: { ticks: { color: "#D1D5DB" }},
+                y: { ticks: { color: "#D1D5DB" }, beginAtZero: true }
+            }
+        }
+    });
+}
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+[
+    {
+        "score": 70,
+        "feedback": "Strong technical skills, but limited experience in backend development",
+        "matched": [
+            "Python",
+            "Java",
+            "Django",
+            "Data Structures & Algorithms",
+            "Problem Solving"
+        ],
+        "missing": [
+            "Backend development experience",
+            "Cloud platforms",
+            "Containerization",
+            "API design"
+        ]
+    },
+    {
+        "score": 70,
+        "feedback": "Strong technical skills, but limited experience in backend development",
+        "matched": [
+            "Python",
+            "Java",
+            "Django",
+            "Data Structures & Algorithms",
+            "Problem Solving"
+        ],
+        "missing": [
+            "Backend development experience",
+            "Cloud platforms",
+            "Containerization",
+            "API design"
+        ]
+    },
+    {
+        "score": 70,
+        "feedback": "Strong technical skills, but limited experience in backend development",
+        "matched": [
+            "Python",
+            "Java",
+            "Django",
+            "Data Structures & Algorithms",
+            "Problem Solving"
+        ],
+        "missing": [
+            "Backend development experience",
+            "Cloud platforms",
+            "Containerization",
+            "API design"
+        ]
+    },
+    {
+        "score": 70,
+        "date": "2025-11-10"
+    },
+    {
+        "score": 70,
+        "date": "2025-11-10"
+    },
+    {
+        "score": 40,
+        "date": "2025-11-10"
+    },
+    {
+        "score": 40,
+        "date": "2025-11-10"
+    }
+]

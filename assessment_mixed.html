@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mixed Assessment | Skillcheck</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background-color:#0c1220;color:#f0f0f0;font-family:"Poppins",sans-serif;margin:0;padding:0; }
+    .navbar { background:#1c1f2b;padding:1rem;text-align:center;font-size:1.3rem;font-weight:600; }
+    .container { max-width:900px;margin:2rem auto;background:#1e2233;border-radius:16px;padding:2rem 2.5rem; }
+    h2 { color:#76b7c4; }
+    .controls { display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center; }
+    input[type="number"] { width:80px;padding:6px;border-radius:6px;background:#2a2f44;color:#fff;border:none; }
+    .btn { background:#4a4e69;color:#fff;border:none;border-radius:10px;padding:0.6rem 1rem;cursor:pointer; }
+    .btn:hover { transform:scale(1.03); }
+    .question-text { font-size:1.15rem;margin-bottom:0.8rem;color:#cfeef5; }
+    .options label { display:block;background:#2a2f44;padding:10px;border-radius:8px;margin-bottom:8px;cursor:pointer; }
+    .option-wrapper.selected label { background:#4a90e2 !important; }
+    input[type="radio"] { display:none; }
+    .question-nav { display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem; }
+    .question-nav button { width:36px;height:36px;border:none;border-radius:8px;background:#2a2f44;color:#fff; }
+    .question-nav button.active { background:#4a90e2; }
+    .question-nav button.answered { background:#16a085; }
+    .nav-buttons { display:flex;justify-content:space-between;margin-top:1rem; }
+    .result-section { display:none;text-align:center; }
+    .meta { margin-top:6px;font-size:.9rem;color:#b0cde0; }
+    .difficulty-tag { padding:4px 8px;border-radius:8px;font-size:.85rem; }
+    .easy-tag { background:#3ba55c; }
+    .medium-tag { background:#f39c12; }
+    .hard-tag { background:#e74c3c; }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">🧠 Skillcheck – Mixed Assessment (Random)</div>
+
+  <div class="container">
+    <h2>Mixed Assessment Generator</h2>
+
+    <div class="controls">
+      <label><input type="checkbox" id="includeEasy" checked> Easy</label>
+      <label><input type="checkbox" id="includeMedium" checked> Medium</label>
+      <label><input type="checkbox" id="includeHard" checked> Hard</label>
+      <label>Total: <input type="number" id="totalQuestions" min="1" max="40" value="10"></label>
+      <button class="btn" id="generateBtn">Generate Mixed Quiz</button>
+      <button class="btn" id="randomDistBtn">Random Distribution</button>
+      <button class="btn" onclick="window.location.href='start_assessment.html'" style="margin-left:auto">← Back</button>
+    </div>
+
+    <div id="metaInfo" class="meta">Weights: Easy=1 | Medium=2 | Hard=3</div>
+
+    <div id="quizArea" style="display:none">
+      <div style="display:flex;justify-content:space-between">
+        <div id="qDifficulty" class="difficulty-tag"></div>
+        <div class="meta">Question <span id="currentIndex">1</span> / <span id="totalCount">10</span></div>
+      </div>
+
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="options"></div>
+
+      <div class="nav-buttons">
+        <button class="btn" id="prevBtn">← Previous</button>
+        <button class="btn" id="nextBtn">Next →</button>
+      </div>
+
+      <div class="question-nav" id="questionNav"></div>
+    </div>
+
+    <div id="resultArea" class="result-section">
+      <h2>🎉 Completed!</h2>
+      <p id="scoreSummary"></p>
+      <canvas id="resultChart"></canvas>
+      <button class="btn" onclick="window.location.href='start_assessment.html'">🏠 Dashboard</button>
+      <button class="btn" id="retryBtn">Retry 🔁</button>
+    </div>
+  </div>
+
+<script>
+/* ✅ FULL QUESTION BANK – NO CHANGE */
+const WEIGHTS={easy:1,medium:2,hard:3};
+
+const easyQuestions=[
+  {q:"What is the output of 2+3?",o:["23","5","6","Error"],a:1},
+  {q:"Which keyword creates a function?",o:["define","func","def","lambda"],a:2},
+  {q:"Which is a list?",o:["{1,2}","(1,2)","[1,2]","None"],a:2},
+  {q:"Which creates a comment?",o:["#","//","<!--","/**/"],a:0},
+  {q:"len('cat') returns?",o:["2","3","4","Error"],a:1}
+];
+
+const mediumQuestions=[
+  {q:"What is print('a'*3)?",o:["aaa","Error","a3","aa"],a:0},
+  {q:"Which gives index of list element?",o:["locator()","find()","index()","get()"],a:2},
+  {q:"range(3) gives?",o:["[0,1,2]","(0,3)","range(0,3)","Error"],a:2},
+  {q:"map() returns?",o:["list","iterator","dict","tuple"],a:1},
+  {q:"Which supports regex?",o:["math","re","numpy","string"],a:1}
+];
+
+const hardQuestions=[
+  {q:"Which keyword defines generator?",o:["yield","return","async","lambda"],a:0},
+  {q:"Decorator in Python means?",o:["Modify another function","Loop","Comment","Exception"],a:0},
+  {q:"exec('print(5)') prints?",o:["5","Error","exec","None"],a:0},
+  {q:"What is closure?",o:["Inner function capturing variables","Class inheritance","Thread","Global variable"],a:0}
+];
+
+/* --- State Variables --- */
+let selectedQuestions=[],answers=[],currentIndex=0;
+
+const includeEasy=document.getElementById("includeEasy");
+const includeMedium=document.getElementById("includeMedium");
+const includeHard=document.getElementById("includeHard");
+const totalQuestions=document.getElementById("totalQuestions");
+const questionText=document.getElementById("questionText");
+const options=document.getElementById("options");
+const questionNav=document.getElementById("questionNav");
+const currentIndexSpan=document.getElementById("currentIndex");
+const totalCountSpan=document.getElementById("totalCount");
+const quizArea=document.getElementById("quizArea");
+const resultArea=document.getElementById("resultArea");
+const qDifficulty=document.getElementById("qDifficulty");
+const scoreSummary=document.getElementById("scoreSummary");
+
+const shuffleArr=a=>[...a].sort(()=>Math.random()-0.5);
+
+/* Generate Mixed quiz */
+function generateMixed(total){
+  const pools=[];
+  if(includeEasy.checked)pools.push({name:"easy",q:shuffleArr(easyQuestions)});
+  if(includeMedium.checked)pools.push({name:"medium",q:shuffleArr(mediumQuestions)});
+  if(includeHard.checked)pools.push({name:"hard",q:shuffleArr(hardQuestions)});
+  if(!pools.length)return alert("Select at least one difficulty");
+
+  selectedQuestions=[];
+  while(selectedQuestions.length<total){
+    const pool=pools[Math.floor(Math.random()*pools.length)];
+    if(!pool.q.length)continue;
+    const q=pool.q.pop();
+    selectedQuestions.push({...q,difficulty:pool.name,weight:WEIGHTS[pool.name]});
+    if(pools.every(p=>p.q.length===0))break;
+  }
+  answers=new Array(selectedQuestions.length).fill(null);
+  currentIndex=0;
+}
+
+/* Render Single Question */
+function renderCurrent(){
+  const q=selectedQuestions[currentIndex];
+  questionText.innerHTML=`${currentIndex+1}. ${q.q}`;
+  qDifficulty.innerHTML=q.difficulty.toUpperCase();
+  qDifficulty.className=`difficulty-tag ${q.difficulty}-tag`;
+
+  options.innerHTML="";
+  q.o.forEach((opt,i)=>{
+    const wrap=document.createElement("div");
+    wrap.className="option-wrapper";
+    wrap.innerHTML=`<input type="radio" name="opts" value="${i}"><label>${opt}</label>`;
+    wrap.onclick=()=>{
+      answers[currentIndex]=i;
+      renderCurrent();
+      updateNav();
+    };
+    if(answers[currentIndex]===i)wrap.classList.add("selected");
+    options.appendChild(wrap);
+  });
+
+  currentIndexSpan.textContent=currentIndex+1;
+  totalCountSpan.textContent=selectedQuestions.length;
+  updateNav();
+}
+
+/* Navigation UI */
+function buildNav(){
+  questionNav.innerHTML="";
+  selectedQuestions.forEach((_,i)=>{
+    const btn=document.createElement("button");
+    btn.textContent=i+1;
+    btn.onclick=()=>{currentIndex=i;renderCurrent();}
+    questionNav.appendChild(btn);
+  });
+}
+
+function updateNav(){
+  [...questionNav.children].forEach((b,i)=>{
+    b.classList.toggle("active",i===currentIndex);
+    b.classList.toggle("answered",answers[i]!=null);
+  });
+}
+
+/* ✅ Show Results */
+function showResults(){
+  let gained=0,max=0,correct=0;
+  selectedQuestions.forEach((q,i)=>{
+    max+=q.weight;
+    if(answers[i]===q.a){gained+=q.weight;correct++;}
+  });
+
+  const wrong=selectedQuestions.length-correct;
+  const pct=Math.round(gained/max*100);
+
+  localStorage.setItem("pythonLatestScore", pct.toString());
+
+  /* ✅ THIS IS THE ONLY MODIFICATION — STORE MIXED ATTEMPT */
+  const attempt={
+      score:pct,
+      level:"mixed",     // <-- REQUIRED FOR DASHBOARD
+      date:new Date().toLocaleString()
+  };
+  let history=JSON.parse(localStorage.getItem("assessmentHistory"))||[];
+  history.push(attempt);
+  localStorage.setItem("assessmentHistory",JSON.stringify(history));
+  /* ✅ END UPDATE */
+
+  quizArea.style.display="none";
+  resultArea.style.display="block";
+  scoreSummary.textContent=`Score ${pct}% ✅${correct} ❌${wrong}`;
+
+  new Chart(document.getElementById('resultChart'),{
+    type:"pie",
+    data:{
+      labels:["Correct","Wrong"],
+      datasets:[{data:[correct,wrong],backgroundColor:["#2ecc71","#e74c3c"]}]
+    }
+  });
+}
+
+/* Button Listeners */
+document.getElementById("generateBtn").onclick=()=>{generateMixed(parseInt(totalQuestions.value)||10);buildNav();renderCurrent();quizArea.style.display="block";resultArea.style.display="none";}
+document.getElementById("randomDistBtn").onclick=()=>document.getElementById("generateBtn").click();
+document.getElementById("prevBtn").onclick=()=>{if(currentIndex>0){currentIndex--;renderCurrent();}};
+document.getElementById("nextBtn").onclick=()=>{if(currentIndex<selectedQuestions.length-1){currentIndex++;renderCurrent();}else showResults();}
+document.getElementById("retryBtn").onclick=()=>document.getElementById("generateBtn").click();
+</script>
+
+</body>
+</html>

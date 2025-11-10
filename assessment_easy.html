@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Skillcheck | Easy Assessment</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body { background-color:#0c1220; color:#f0f0f0; font-family:"Poppins",sans-serif; margin:0; padding:0; }
+    .navbar { background-color:#1c1f2b; padding:1rem 2rem; text-align:center; font-size:1.4rem; font-weight:600; box-shadow:0 2px 8px rgba(0,0,0,0.3) }
+    .container { width:80%; max-width:800px; margin:2rem auto; background-color:#1e2233;
+      padding:2rem; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.4); text-align:center }
+    .question-text { font-size:1.3rem; margin-bottom:1.2rem; color:#76b7c4 }
+    .options { list-style:none; padding:0 }
+    .options li { background:#2c3145; margin:0.6rem 0; padding:0.8rem; border-radius:8px; cursor:pointer; transition:.3s }
+    .options li:hover { background:#3b4160 }
+    .options li.selected { background:#4a90e2 }
+    .btn-container { display:flex; justify-content:space-between; margin-top:1.5rem }
+    button { background-color:#4a4e69; color:white; border:none; padding:0.7rem 1.3rem; border-radius:8px; cursor:pointer; font-size:1rem }
+    button:hover { transform:scale(1.05) }
+    #questionNumbers { display:grid; grid-template-columns:repeat(10,1fr); gap:0.5rem; margin-top:1.5rem }
+    #questionNumbers button { background:#2d3250; border:none; padding:0.6rem; border-radius:6px; cursor:pointer; color:white }
+    #questionNumbers button.active { background:#4a90e2 }
+    #resultSection { display:none }
+    canvas { margin-top:2rem }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">🧠 Skillcheck – Easy Level Assessment</nav>
+
+  <div class="container" id="quizSection">
+    <div id="question-container"></div>
+
+    <div class="btn-container">
+      <button id="prevBtn">← Previous</button>
+      <button id="nextBtn">Next →</button>
+    </div>
+
+    <div id="questionNumbers"></div>
+  </div>
+
+  <div class="container" id="resultSection">
+    <h2>Assessment Completed ✅</h2>
+    <p id="scoreText"></p>
+    <canvas id="resultChart" width="300" height="300"></canvas>
+    <button onclick="window.location.href='main.html'" style="margin-top:1rem">
+      🏠 Back to Dashboard
+    </button>
+  </div>
+
+  <script>
+    const EASY_WEIGHT_PERCENT = 0.5; // ✅ Weightage is unchanged
+
+    /* ✅ EXACT 50 QUESTIONS — NOT A SINGLE CHANGE */
+    const allQuestions = [
+      { q: "What is the output of print(2 ** 3)?", o: ["5", "6", "8", "9"], a: 2 },
+      { q: "Which keyword is used to define a function in Python?", o: ["func", "define", "def", "lambda"], a: 2 },
+      { q: "What data type is [1, 23, 'hello']?", o: ["Dictionary", "List", "Tuple", "Set"], a: 1 },
+      { q: "How do you start a comment in Python?", o: ["//", "#", "<!--", "/*"], a: 1 },
+      { q: "Which function removes whitespace?", o: ["trim()", "remove()", "strip()", "cut()"], a: 2 },
+      { q: "Which operator is used for floor division?", o: ["/", "//", "%", "**"], a: 1 },
+      { q: "What is the correct file extension for Python?", o: [".pt", ".py", ".p", ".python"], a: 1 },
+      { q: "Which method adds an item to a list?", o: ["insert()", "append()", "add()", "push()"], a: 1 },
+      { q: "What is the output of len('Python')?", o: ["5", "6", "7", "Error"], a: 1 },
+      { q: "Which keyword is used to create a class?", o: ["function", "def", "class", "object"], a: 2 },
+      { q: "Which data type is immutable?", o: ["List", "Set", "Tuple", "Dictionary"], a: 2 },
+      { q: "What does the 'break' statement do?", o: ["Exit loop", "Pause loop", "Restart loop", "Skip iteration"], a: 0 },
+      { q: "What is the output of bool(0)?", o: ["True", "False", "Error", "0"], a: 1 },
+      { q: "What does 'len()' return?", o: ["Data type", "Length", "Index", "Error"], a: 1 },
+      { q: "Which function converts to integer?", o: ["float()", "int()", "str()", "chr()"], a: 1 },
+      { q: "Which of the following is not a core data type?", o: ["Lists", "Dictionary", "Class", "Tuple"], a: 2 },
+      { q: "What is used to define blocks of code in Python?", o: ["Braces", "Indentation", "Parentheses", "Quotation"], a: 1 },
+      { q: "Which function gives user input?", o: ["read()", "input()", "get()", "scan()"], a: 1 },
+      { q: "What does 'pass' keyword do?", o: ["Skip block", "Stop code", "Raise error", "Exit program"], a: 0 },
+      { q: "Which library is used for data analysis?", o: ["pandas", "numpy", "matplotlib", "django"], a: 0 },
+      { q: "Which library is used for machine learning?", o: ["sklearn", "flask", "os", "math"], a: 0 },
+      { q: "What symbol is used to import modules?", o: ["#", "@", "import", "$"], a: 2 },
+      { q: "Which keyword creates an anonymous function?", o: ["lambda", "anon", "def", "func"], a: 0 },
+      { q: "Which function returns max value?", o: ["highest()", "max()", "top()", "greatest()"], a: 1 },
+      { q: "Which is a Python framework?", o: ["Django", "React", "Laravel", "Spring"], a: 0 },
+      { q: "What symbol is used for comments?", o: ["#", "//", "/*", "<!--"], a: 0 },
+      { q: "Which function shows output?", o: ["display()", "echo()", "print()", "show()"], a: 2 },
+      { q: "Which keyword handles exceptions?", o: ["try", "catch", "except", "finally"], a: 0 },
+      { q: "Which module handles JSON?", o: ["json", "xml", "csv", "pickle"], a: 0 },
+      { q: "What function returns absolute value?", o: ["mod()", "abs()", "fabs()", "positive()"], a: 1 },
+      { q: "What is a correct way to open a file?", o: ["open('file')", "file.open()", "openFile()", "read('file')"], a: 0 },
+      { q: "Which data type uses {} brackets?", o: ["Set", "List", "Tuple", "Array"], a: 0 },
+      { q: "Which method joins list elements?", o: ["combine()", "join()", "concat()", "append()"], a: 1 },
+      { q: "How to get keys from a dictionary?", o: ["dict.values()", "dict.keys()", "dict.items()", "dict.get()"], a: 1 },
+      { q: "What is the output of 10 % 3?", o: ["1", "3", "0", "2"], a: 0 },
+      { q: "Which function sorts list ascending?", o: ["arr.order()", "arr.sort()", "sort(arr)", "arr.sorted()"], a: 1 },
+      { q: "Which function gives length of dict?", o: ["count()", "size()", "len()", "length()"], a: 2 },
+      { q: "Which keyword defines a loop?", o: ["for", "loop", "iterate", "run"], a: 0 },
+      { q: "Which function converts to string?", o: ["str()", "int()", "char()", "repr()"], a: 0 },
+      { q: "What is used to get random numbers?", o: ["math", "random", "numbers", "rand"], a: 1 },
+      { q: "Which method removes item by value?", o: ["del()", "pop()", "remove()", "discard()"], a: 2 },
+      { q: "What does range(5) return?", o: ["[0,1,2,3,4]", "1–5", "0–5", "5 numbers"], a: 0 },
+      { q: "What is the result of '5' + '5'?", o: ["10", "55", "Error", "5+5"], a: 1 },
+      { q: "What is Python?", o: ["Compiler", "Interpreter", "Both", "None"], a: 1 },
+      { q: "Who developed Python?", o: ["Elon Musk", "Guido van Rossum", "James Gosling", "Mark Zuckerberg"], a: 1 },
+      { q: "Which keyword exits loop?", o: ["exit", "break", "stop", "quit"], a: 1 },
+      { q: "Which statement handles error?", o: ["if", "try-except", "case", "switch"], a: 1 },
+      { q: "What type is (5,)?", o: ["List", "Tuple", "Set", "Dict"], a: 1 },
+      { q: "Which operator checks equality?", o: ["=", "==", "!=", "<>"], a: 1 },
+      { q: "Which keyword defines a function?", o: ["define", "def", "lambda", "func"], a: 1 }
+    ];
+
+    /* 🔥 DO NOT TOUCH — ONLY FIXED CLICK ISSUE */
+    const questions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 10);
+
+    let current = 0;
+    let answers = Array(questions.length).fill(null);
+
+    const questionContainer = document.getElementById("question-container");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const questionNumbers = document.getElementById("questionNumbers");
+    const quizSection = document.getElementById("quizSection");
+    const resultSection = document.getElementById("resultSection");
+    const scoreText = document.getElementById("scoreText");
+
+    function renderQuestion() {
+      const q = questions[current];
+      questionContainer.innerHTML = `
+        <div class="question-text">${current + 1}. ${q.q}</div>
+        <ul class="options">
+          ${q.o.map((opt, idx) => `
+            <li class="${answers[current] === idx ? 'selected' : ''}"
+                onclick="selectOption(${idx})">${opt}</li>
+          `).join("")}
+        </ul>`;
+      updateButtons();
+    }
+
+    function selectOption(idx) {
+      answers[current] = idx;
+      renderQuestion();
+    }
+
+    function updateButtons() {
+      prevBtn.disabled = current === 0;
+      nextBtn.textContent = current === questions.length - 1 ? "Finish →" : "Next →";
+
+      [...questionNumbers.children].forEach((btn, i) =>
+        btn.classList.toggle("active", i === current)
+      );
+    }
+
+    prevBtn.onclick = () => {
+      if (current > 0) current--;
+      renderQuestion();
+    };
+
+    nextBtn.onclick = () => {
+      if (current < questions.length - 1) current++;
+      else showResults();
+      renderQuestion();
+    };
+
+    questions.forEach((_, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = i + 1;
+      btn.onclick = () => (current = i, renderQuestion());
+      questionNumbers.appendChild(btn);
+    });
+
+    function showResults() {
+      let correct = 0;
+      answers.forEach((ans, i) => {
+        if (ans === questions[i].a) correct++;
+      });
+
+      const scorePercent = Math.min(100, Math.round(correct * EASY_WEIGHT_PERCENT));
+
+      /* ✅ Store latest score */
+      localStorage.setItem("pythonLatestScore", scorePercent);
+
+      /* ✅ Store assessment history */
+      const attempt = {
+        score: scorePercent,
+        level: "easy",
+        date: new Date().toLocaleString()
+      };
+
+      let history = JSON.parse(localStorage.getItem("assessmentHistory")) || [];
+      history.push(attempt);
+      localStorage.setItem("assessmentHistory", JSON.stringify(history));
+
+      quizSection.style.display = "none";
+      resultSection.style.display = "block";
+      scoreText.textContent = `Score: ${scorePercent}% (Correct: ${correct}/10)`;
+
+      new Chart(document.getElementById("resultChart"), {
+        type: "pie",
+        data: { labels: ["Correct", "Wrong"], datasets: [{ data: [correct, 10 - correct], backgroundColor: ["#3ba55c", "#e74c3c"] }] }
+      });
+    }
+
+    renderQuestion();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Python Assessment (Medium) | Skillcheck</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #0c1220;
+      color: #f0f0f0;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #1c1f2b;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background-color: #1e2233;
+      border-radius: 16px;
+      padding: 2rem 3rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    h2 { color: #76b7c4; }
+
+    .question { margin-bottom: 1.2rem; font-size: 1.2rem; }
+
+    .options label {
+      display: block;
+      margin: 0.6rem 0;
+      padding: 0.6rem;
+      background-color: #2a2f44;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .options input[type="radio"] { display: none; }
+    .options input[type="radio"]:checked + label {
+      background-color: #4a90e2;
+      color: #fff;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    button {
+      background-color: #4a4e69;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background-color: #5f65a3; transform: scale(1.05); }
+
+    .question-nav {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .question-nav button {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
+      background-color: #2a2f44;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+    .question-nav button.active { background-color: #4a90e2; }
+
+    .result-section { display: none; text-align: center; }
+  </style>
+</head>
+
+<body>
+  <div class="navbar">🧠 Python Assessment – Medium Level</div>
+
+  <div class="container">
+    <div id="quiz-section">
+      <h2 id="question-text"></h2>
+      <div class="options" id="options"></div>
+
+      <div class="nav-buttons">
+        <button id="prevBtn">← Previous</button>
+        <button id="nextBtn">Next →</button>
+      </div>
+
+      <div class="question-nav" id="questionNav"></div>
+    </div>
+
+    <div class="result-section" id="result-section">
+      <h2>🎉 Assessment Completed!</h2>
+      <p id="score-text"></p>
+      <canvas id="resultChart" width="200" height="200"></canvas>
+      <button onclick="window.location.href='main.html'">🏠 Back to Dashboard</button>
+    </div>
+  </div>
+
+  <script>
+    const WEIGHT = 1; // ✅ Updated weight for your requirement
+
+    const questionBank = [
+      { q: "What is the output of print(type([]) is list)?", o: ["True","False","list","TypeError"], a: 0 },
+      { q: "What will be printed: print('a' * 3)?", o: ["aaa","a3","Error","3a"], a: 0 },
+      { q: "What is the output of sum([1,2,3], 10)?", o: ["16","6","10","Error"], a: 0 },
+      { q: "Which of these creates a shallow copy of a list?", o: ["copy()","deepcopy()","clone()","slice()"], a: 0 },
+      { q: "What is the result of set([1,2,2,3])?", o: ["{1,2,3}","[1,2,3]","{1,1,2,3}","Error"], a: 0 },
+      { q: "Which function can convert a list of strings to integers?", o: ["int(list)","map(int, list)","list(int)","cast(list)"], a: 1 },
+      { q: "How to remove duplicate items from a list?", o: ["list(set(list))","list(list)","unique(list)","filter(list)"], a: 0 },
+      { q: "What is the output of bool('False')?", o: ["True","False","None","Error"], a: 0 },
+      { q: "What does enumerate() return?", o: ["index and value pairs","just values","just indices","dictionary"], a: 0 },
+      { q: "Which is not a valid set method?", o: ["add()","remove()","update()","append()"], a: 3 },
+
+      { q: "What will be output: print([i for i in range(3)])", o: ["[0,1,2]","[1,2,3]","[0,1,2,3]","[1,2]"], a: 0 },
+      { q: "What is the output: print(bool([]), bool({}), bool(()))", o: ["False False False","True True True","False True False","Error"], a: 0 },
+      { q: "What is the output of 3 * 'ab'?", o: ["ababab","ab3","Error","aabbcc"], a: 0 },
+      { q: "Which statement is TRUE about Python dictionaries?", o: ["Keys must be unique","Values must be unique","Keys can be lists","Keys must be same type"], a: 0 },
+      { q: "What is output: print(2 < 3 and 4 < 5)", o: ["True","False","None","Error"], a: 0 },
+      { q: "Which operator is used for floor division?", o: ["/","//","%","**"], a: 1 },
+      { q: "What will be printed: x=[1,2]; y=x; y.append(3); print(x)", o: ["[1,2]","[1,2,3]","[3,1,2]","Error"], a: 1 },
+      { q: "Which method returns index of list item?", o: ["find()","locate()","index()","position()"], a: 2 },
+      { q: "Which is immutable?", o: ["list","set","tuple","dict"], a: 2 },
+      { q: "Output: print('hello {0}'.format('world'))", o: ["hello {0}","hello world","world hello","Error"], a: 1 },
+
+      { q: "How do you check Python version?", o: ["python -v","python --version","version()","sys.version()"], a: 1 },
+      { q: "Output of 5//2?", o: ["2","2.5","3","Error"], a: 0 },
+      { q: "Output: print(3 != 4)?", o: ["True","False","None","Error"], a: 0 },
+      { q: "Which module provides regex?", o: ["re","regex","math","string"], a: 0 },
+      { q: "Output of list('abc')?", o: ["['a','b','c']","['abc']","['a b c']","Error"], a: 0 },
+      { q: "Result of min([2,3,1])?", o: ["1","2","3","Error"], a: 0 },
+      { q: "Output of 'Python'.lower()?", o: ["PYTHON","python","Python","None"], a: 1 },
+      { q: "Which function reads user input?", o: ["scan()","read()","input()","get()"], a: 2 },
+      { q: "Output of isinstance(3,int)?", o: ["True","False","Error","None"], a: 0 },
+      { q: "Keyword for function?", o: ["function","def","lambda","fun"], a: 1 },
+
+      { q: "Output: print('1' + '2')", o: ["3","12","Error","None"], a: 1 },
+      { q: "Function for length?", o: ["len()","count()","sum()","size()"], a: 0 },
+      { q: "Output: bool(0)?", o: ["True","False","None","Error"], a: 1 },
+      { q: "Convert string -> int?", o: ["toInt()","int()","str()","convert()"], a: 1 },
+      { q: "Not a loop statement?", o: ["for","while","loop","break"], a: 2 },
+      { q: "Output: range(3)?", o: ["[0,1,2]","range(0,3)","Error","0 1 2"], a: 1 },
+      { q: "Remove last element?", o: ["remove()","pop()","discard()","delete()"], a: 1 },
+      { q: "Output: bool(None)?", o: ["True","False","Error","None"], a: 1 },
+      { q: "Function max value?", o: ["maximum()","max()","largest()","top()"], a: 1 },
+      { q: "abs() gives?", o: ["absolute value","square root","integer","nothing"], a: 0 },
+
+      { q: "Output: 2**3?", o: ["8","6","9","Error"], a: 0 },
+      { q: "Loop exit keyword?", o: ["return","break","stop","exit"], a: 1 },
+      { q: "Returns sorted list?", o: ["sort()","sorted()","order()","arrange()"], a: 1 },
+      { q: "type({}) gives?", o: ["list","dict","set","tuple"], a: 1 },
+      { q: "Print: 2==2.0?", o: ["True","False","Error","None"], a: 0 },
+      { q: "Function list of keys?", o: ["keys()","getkeys()","dictkeys()","fetch()"], a: 0 },
+      { q: "tuple([1,2])?", o: ["(1,2)","[1,2]","{1,2}","Error"], a: 0 },
+      { q: "int -> str?", o: ["str()","int()","float()","chr()"], a: 0 },
+      { q: "5%2 gives?", o: ["1","2","3","Error"], a: 0 },
+      { q: "Valid variable name?", o: ["2name","my_name","my-name","class"], a: 1 },
+
+      { q: "try-except handles?", o: ["errors","functions","loops","classes"], a: 0 },
+      { q: "Random values module?", o: ["random","rand","math","time"], a: 0 },
+      { q: "Rounds number?", o: ["round()","ceil()","floor()","int()"], a: 0 },
+      { q: "print('Hello'.replace('l','L'))?", o: ["HeLLo","HELLO","hello","Error"], a: 0 },
+      { q: "'Python'[::-1]?", o: ["nohtyP","Python","Error","None"], a: 0 },
+      { q: "Unordered datatype?", o: ["list","tuple","set","string"], a: 2 },
+      { q: "Remove whitespace?", o: ["trim()","strip()","clean()","cut()"], a: 1 },
+      { q: "continue does?", o: ["Stops loop","Skips iteration","Ends program","None"], a: 1 },
+      { q: "Logical AND?", o: ["&&","and","&","||"], a: 1 },
+      { q: "Add list element?", o: ["add()","push()","append()","insert()"], a: 2 },
+
+      { q: "Default function return?", o: ["0","None","False","Error"], a: 1 },
+      { q: "Counts elements?", o: ["len()","count()","sum()","size()"], a: 1 },
+      { q: "date & time module?", o: ["datetime","calendar","time","os"], a: 0 },
+      { q: "print('5'+'5')?", o: ["55","10","Error","5"], a: 0 },
+      { q: "isinstance([],list)?", o: ["True","False","None","Error"], a: 0 },
+      { q: "len(' ')?", o: ["1","0","Error","None"], a: 0 },
+      { q: "Check type?", o: ["type()","isinstance()","id()","both a and b"], a: 3 },
+      { q: "print('hello'.capitalize())?", o: ["Hello","HELLO","hello","Error"], a: 0 },
+      { q: "Convert to float?", o: ["float()","int()","double()","real()"], a: 0 },
+      { q: "Largest number?", o: ["max()","top()","largest()","sum()"], a: 0 },
+
+      { q: "ASCII value?", o: ["ascii()","ord()","chr()","code()"], a: 1 },
+      { q: "Keyword for class?", o: ["function","def","class","type"], a: 2 },
+      { q: "10//3?", o: ["3","3.3","3.0","Error"], a: 0 },
+      { q: "Output len([])?", o: ["0","1","None","Error"], a: 0 },
+      { q: "Remove dict key?", o: ["remove()","del","discard()","delete()"], a: 1 },
+      { q: "print('Python'.find('t'))?", o: ["2","1","3","-1"], a: 0 },
+      { q: "Not Python keyword?", o: ["try","catch","raise","return"], a: 1 },
+      { q: "abs() returns?", o: ["absolute value","double","None","Int"], a: 0 },
+      { q: "Add multiple to set?", o: ["update()","append()","extend()","addAll()"], a: 0 },
+      { q: "x += 2 means?", o: ["x = x + 2","x = x - 2","x = 2","x = 0"], a: 0 },
+
+      { q: "Exponent operator?", o: ["^","**","exp()","pow"], a: 1 },
+      { q: "len({'a':1,'b':2})?", o: ["2","1","3","Error"], a: 0 },
+      { q: "list(range(3))?", o: ["[0,1,2]","[1,2,3]","[3,2,1]","Error"], a: 0 },
+      { q: "Math module?", o: ["math","numbers","calc","compute"], a: 0 },
+      { q: "Python comment?", o: ["//","#","/* */","--"], a: 1 },
+      { q: "bool('')?", o: ["False","True","None","Error"], a: 0 },
+      { q: "Output function?", o: ["display()","echo()","print()","output()"], a: 2 },
+      { q: "print(5=='5')?", o: ["False","True","Error","None"], a: 0 },
+      { q: "Smallest value?", o: ["min()","least()","low()","bottom()"], a: 0 },
+      { q: "Power calculation?", o: ["pow()","power()","exp()","sqrt()"], a: 0 },
+
+      { q: "Keyword for anon function?", o: ["lambda","def","fun","class"], a: 0 },
+      { q: "pass statement?", o: ["Does nothing","Skips loop","Stops function","None"], a: 0 },
+      { q: "Exit function keyword?", o: ["break","return","exit","stop"], a: 1 },
+      { q: "length of dict {'x':10,'y':20}?", o: ["2","1","3","Error"], a: 0 },
+      { q: "print('Py'+'thon')?", o: ["Python","Py thon","Py+thon","Error"], a: 0 },
+      { q: "Keyword creates generator?", o: ["yield","generate","return","async"], a: 0 },
+      { q: "Loop statements?", o: ["for","if","while","both a and c"], a: 3 },
+      { q: "Add dict item?", o: ["dict['key']=value","add()","append()","insert()"], a: 0 },
+      { q: "None represents?", o: ["no value","zero","False","empty string"], a: 0 }
+    ];
+
+    const selectedQuestions = questionBank.sort(() => Math.random() - 0.5).slice(0, 10);
+
+    let current = 0;
+    let answers = Array(10).fill(null);
+
+    function renderQuestion(i) {
+      const q = selectedQuestions[i];
+      document.getElementById("question-text").textContent = `Q${i + 1}. ${q.q}`;
+      const optDiv = document.getElementById("options");
+      optDiv.innerHTML = "";
+      q.o.forEach((opt, idx) => {
+        const id = `q${i}_${idx}`;
+        optDiv.innerHTML += `
+          <input type="radio" id="${id}" name="q${i}" value="${idx}" ${answers[i] === idx ? "checked" : ""}>
+          <label for="${id}">${opt}</label>
+        `;
+      });
+
+      document.querySelectorAll(".question-nav button").forEach((b, x) =>
+        b.classList.toggle("active", x === i)
+      );
+    }
+
+    function saveAnswer() {
+      const selected = document.querySelector(`input[name="q${current}"]:checked`);
+      if (selected) answers[current] = parseInt(selected.value);
+    }
+
+    function renderNav() {
+      const nav = document.getElementById("questionNav");
+      nav.innerHTML = "";
+      for (let i = 0; i < selectedQuestions.length; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i + 1;
+        btn.onclick = () => {
+          saveAnswer();
+          current = i;
+          renderQuestion(i);
+        };
+        nav.appendChild(btn);
+      }
+    }
+
+    document.getElementById("nextBtn").onclick = () => {
+      saveAnswer();
+      if (current < selectedQuestions.length - 1) {
+        current++;
+        renderQuestion(current);
+      } else finish();
+    };
+
+    document.getElementById("prevBtn").onclick = () => {
+      saveAnswer();
+      if (current > 0) {
+        current--;
+        renderQuestion(current);
+      }
+    };
+
+    function finish() {
+      let correct = 0;
+      selectedQuestions.forEach((q, i) => {
+        if (answers[i] === q.a) correct++;
+      });
+
+      const totalWeight = selectedQuestions.length * WEIGHT;
+      const earned = correct * WEIGHT;
+      const percent = Math.round((earned / totalWeight) * 100);
+
+      // ✅ Store latest score (already exists)
+      localStorage.setItem("pythonLatestScore", percent.toString());
+
+// ✅ Store history
+      const attempt = {
+        score: percent,
+        level: "medium",  // change to "easy" or "hard" depending on page
+        date: new Date().toLocaleString()
+      };
+
+      let history = JSON.parse(localStorage.getItem("assessmentHistory")) || [];
+      history.push(attempt);
+      localStorage.setItem("assessmentHistory", JSON.stringify(history));
+
+      document.getElementById("quiz-section").style.display = "none";
+      const res = document.getElementById("result-section");
+      res.style.display = "block";
+      document.getElementById("score-text").textContent =
+        `You scored ${percent}% — Correct: ${correct}/${selectedQuestions.length}`;
+
+      new Chart(document.getElementById("resultChart"), {
+        type: "pie",
+        data: {
+          labels: ["Correct", "Wrong"],
+          datasets: [{ data: [correct, selectedQuestions.length - correct], backgroundColor: ["#2ecc71","#e74c3c"]}]
+        }
+      });
+    }
+
+    renderNav();
+    renderQuestion(0);
+  </script>
+</body>
+</html>

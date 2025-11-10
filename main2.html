@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recruiter Dashboard | Skillcheck</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Icon font for the hamburger */
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li class="profile-dropdown">
+        <div class="profile-avatar" id="profileAvatar">HR</div> 
+        <div class="dropdown-menu" id="profileMenu">
+          <p class="dropdown-header">HR Manager</p>
+          <a href="#search" id="viewProfile">👁️ View Profile</a>
+          <a href="#search" id="updateProfile">✏️ Update Profile</a>
+          <a href="login.html">🚪 Logout</a>
+        </div>
+      </li>
+      
+      <div class="brand-center">Skillcheck</div>
+      
+      <li class="nav-links">
+        <a href="#search">🔍 Candidate Search</a>
+        <a href="#jobs">💼 My Job Posts</a>
+        <a href="#applications">📧 Applications</a> 
+      </li>
+      
+      <div class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+      </div>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="search">
+      <h2>Search Candidates by Goal Job Role</h2>
+      <form id="jobSearchForm">
+        <div class="input-group">
+          <label for="jobRole">Select Desired Job Role:</label>
+          <select id="jobRole" required>
+            <option value="">Select a Role...</option>
+            <option value="Web Developer">Web Developer</option>
+            <option value="Data Scientist">Data Scientist</option>
+            <option value="AI Engineer">AI Engineer</option>
+            <option value="Cloud Architect">Cloud Architect</option>
+          </select>
+        </div>
+        <button type="submit" class="btn">Search Candidates</button>
+      </form>
+      
+      <div id="candidateResults" style="margin-top: 30px;">
+        <h3>Top Candidates for <span id="selectedRole">...</span></h3>
+        <ul class="candidate-list" id="candidateList">
+          </ul>
+      </div>
+    </section>
+
+    <section id="jobs">
+        <h2>My Job Posts</h2>
+        <p style="color: #ddd;">You have 3 active job postings.</p>
+        
+        <a href="post_job.html" class="btn" style="width: auto; padding: 10px 20px; text-decoration: none; display: inline-block;">Post New Job</a>
+        
+    </section>
+
+    <section id="applications">
+      <h2>Received Applications</h2>
+      
+      <div class="input-group" style="max-width: 400px; margin-bottom: 20px;">
+        <label for="jobFilter" style="color: #fff; margin-top: 0;">Filter by Job Post:</label>
+        <select id="jobFilter" onchange="filterApplications()">
+          <option value="all" id="allApplicationsOption">All Applications (5 Total)</option>
+          <option value="101" id="job101Option">Full Stack Developer (3 Applicants)</option>
+          <option value="102" id="job102Option">Junior Front-End Engineer (2 Applicants)</option>
+        </select>
+      </div>
+
+      <ul class="candidate-list" id="applicationList">
+        <li data-job-id="101" data-job-title="Full Stack Developer" data-candidate-name="Sarah Connor" data-candidate-score="92">
+          <div class="candidate-info">
+            <h3>Sarah Connor</h3>
+            <p>Applied for: Full Stack Developer</p>
+          </div>
+          <div class="candidate-score" style="color: #00b894;">92%</div>
+          <button class="btn view-profile-btn application-view" style="width: auto; padding: 5px 15px;">View Application</button>
+        </li>
+        <li data-job-id="101" data-job-title="Full Stack Developer" data-candidate-name="David Chen" data-candidate-score="78">
+          <div class="candidate-info">
+            <h3>David Chen</h3>
+            <p>Applied for: Full Stack Developer</p>
+          </div>
+          <div class="candidate-score" style="color: #f7b731;">78%</div>
+          <button class="btn view-profile-btn application-view" style="width: auto; padding: 5px 15px;">View Application</button>
+        </li>
+        <li data-job-id="102" data-job-title="Junior Front-End Engineer" data-candidate-name="Mia Lopez" data-candidate-score="55">
+          <div class="candidate-info">
+            <h3>Mia Lopez</h3>
+            <p>Applied for: Junior Front-End Engineer</p>
+          </div>
+          <div class="candidate-score" style="color: #e84118;">55%</div>
+          <button class="btn view-profile-btn application-view" style="width: auto; padding: 5px 15px;">View Application</button>
+        </li>
+      </ul>
+    </section>
+    </main>
+  
+  <div class="sidebar-menu" id="sidebarMenu">
+    <a href="#search">🔍 Candidate Search</a>
+    <a href="#jobs">💼 My Job Posts</a>
+    <a href="#applications">📧 Applications</a>
+  </div>
+
+  <div class="modal-overlay" id="applicationModal">
+    <div class="modal-content">
+        <span class="close-button" style="position: absolute; top: 10px; right: 20px; font-size: 24px; cursor: pointer;">&times;</span>
+        
+        <h3 id="modalCandidateName">Candidate Profile</h3>
+        
+        <div class="modal-profile-summary">
+            <p><strong>Goal Role:</strong> <span id="modalJobTitle"></span></p>
+            <p><strong>Overall Competency Score:</strong> <span id="modalCandidateScore"></span></p>
+            <p><strong>Last Assessment:</strong> <span id="modalAssessmentDate">N/A</span></p>
+            <p id="modalApplicationStatusLine" style="display: none;"><strong>Status:</strong> <span id="modalApplicationStatus">Pending Review</span></p>
+            <p style="margin-top: 20px;">
+                <button class="btn" style="width: 100%; padding: 10px;">Download Full Profile Report</button>
+            </p>
+        </div>
+        
+        <div class="modal-actions" id="modalManagementActions" style="display: none;">
+            <button class="btn reject" id="rejectApplication">Reject Application</button>
+            <button class="btn delete" id="deleteApplication">Delete Application</button>
+        </div>
+        
+        <button class="btn" style="width: 100%; margin-top: 15px;" onclick="document.getElementById('applicationModal').style.display='none';">Close</button>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h3>Skillcheck</h3>
+        <p>Your Skills, Your Score, Your Future.</p>
+        <p class="copyright">&copy; 2025 Skillcheck. All rights reserved.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Company</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="#">FAQ</a>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <a href="#">Terms and Conditions</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- Application Filtering and Counting Logic ---
+    function filterApplications() {
+        const filterValue = document.getElementById('jobFilter').value;
+        const applications = document.getElementById('applicationList').querySelectorAll('li');
+        let totalCount = 0;
+        let jobCounts = {};
+
+        applications.forEach(app => {
+            const appId = app.getAttribute('data-job-id');
+            
+            if (filterValue === 'all' || appId === filterValue) {
+                app.style.display = 'flex';
+            } else {
+                app.style.display = 'none';
+            }
+            
+            totalCount++;
+            jobCounts[appId] = (jobCounts[appId] || 0) + 1;
+        });
+
+        const allOption = document.getElementById('allApplicationsOption');
+        const job101Option = document.getElementById('job101Option');
+        const job102Option = document.getElementById('job102Option');
+
+        if (allOption) {
+             allOption.textContent = `All Applications (${totalCount} Total)`;
+        }
+        if (job101Option) {
+            job101Option.textContent = `Full Stack Developer (${jobCounts['101'] || 0} Applicants)`;
+        }
+        if (job102Option) {
+            job102Option.textContent = `Junior Front-End Engineer (${jobCounts['102'] || 0} Applicants)`;
+        }
+    }
+
+    // --- Function to load and display user profile data from Local Storage ---
+    function loadUserProfile() {
+        const userDataString = localStorage.getItem('currentUser');
+        let user = { name: 'HR Manager', initials: 'HR' };
+
+        if (userDataString) {
+            user = JSON.parse(userDataString);
+        }
+        
+        // --- FIX: Ensure profile avatar and dropdown work ---
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileMenu = document.getElementById('profileMenu');
+        
+        profileAvatar.textContent = user.initials;
+        document.querySelector('.dropdown-header').textContent = user.name;
+        
+        // Attach click handler to profile avatar (restored functionality)
+        profileAvatar.addEventListener('click', () => {
+            profileMenu.classList.toggle('active');
+        });
+        // --- END FIX ---
+        
+        const jobFilterSelect = document.getElementById('jobFilter');
+        if (jobFilterSelect) {
+             jobFilterSelect.style.width = '100%';
+             jobFilterSelect.style.padding = '10px';
+             jobFilterSelect.style.borderRadius = '8px';
+             jobFilterSelect.style.border = '1px solid #ddd';
+             jobFilterSelect.style.color = '#333';
+             jobFilterSelect.style.backgroundColor = '#fff';
+        }
+        
+        filterApplications();
+    }
+
+    // Call this new function first
+    loadUserProfile(); 
+    
+    // --- Application/Profile Management Logic ---
+    const applicationModal = document.getElementById('applicationModal');
+    const applicationList = document.getElementById('applicationList');
+    const candidateListContainer = document.getElementById('candidateResults'); // Container for search results
+    const modalCloseButton = document.querySelector('.modal-overlay .close-button');
+    const modalManagementActions = document.getElementById('modalManagementActions');
+    const modalApplicationStatusLine = document.getElementById('modalApplicationStatusLine');
+    
+    let currentApplicationElement = null; 
+
+    // Helper function to populate and show the modal
+    function showModal(name, role, score, date, isApplication) {
+        document.getElementById('modalCandidateName').textContent = name + (isApplication ? ' - Application Review' : ' - Full Profile');
+        document.getElementById('modalJobTitle').textContent = role;
+        document.getElementById('modalCandidateScore').textContent = score + '%';
+        document.getElementById('modalAssessmentDate').textContent = date;
+
+        // Toggle visibility of management actions based on context
+        modalManagementActions.style.display = isApplication ? 'flex' : 'none';
+        modalApplicationStatusLine.style.display = isApplication ? 'block' : 'none';
+        
+        applicationModal.style.display = 'flex';
+    }
+
+
+    // 1. Open Modal and Load Data (Applications Section)
+    applicationList.addEventListener('click', function(e) {
+        if (e.target.classList.contains('view-profile-btn') && e.target.classList.contains('application-view')) {
+            const listItem = e.target.closest('li');
+            currentApplicationElement = listItem; 
+            
+            const name = listItem.getAttribute('data-candidate-name');
+            const jobTitle = listItem.getAttribute('data-job-title');
+            const score = listItem.getAttribute('data-candidate-score');
+
+            showModal(name, jobTitle, score, 'N/A (Applied Status)', true);
+        }
+    });
+
+    // 2. Open Modal and Load Data (Candidate Search Section) - NEW HANDLER
+    function attachViewProfileHandlers() {
+        document.querySelectorAll('#candidateResults .candidate-list .btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const listItem = this.closest('li');
+                const name = listItem.querySelector('h3').textContent;
+                const score = listItem.querySelector('.candidate-score').textContent.replace('%', '');
+                const role = document.getElementById('jobRole').value;
+                const date = listItem.querySelector('p').textContent.replace('Last Assessment: ', '');
+
+                showModal(name, role, score, date, false); 
+            });
+        });
+    }
+
+    // Close Modal
+    modalCloseButton.addEventListener('click', () => {
+        applicationModal.style.display = 'none';
+    });
+    
+    // Close Modal if user clicks outside of the content
+    applicationModal.addEventListener('click', (e) => {
+        if (e.target === applicationModal) {
+            applicationModal.style.display = 'none';
+        }
+    });
+
+
+    // Action: Reject Application
+    document.getElementById('rejectApplication').addEventListener('click', () => {
+        if (currentApplicationElement && confirm(`Are you sure you want to reject the application for ${currentApplicationElement.getAttribute('data-candidate-name')}?`)) {
+            alert('Application Rejected!');
+            currentApplicationElement.remove();
+            applicationModal.style.display = 'none';
+            currentApplicationElement = null;
+            filterApplications();
+        }
+    });
+
+    // Action: Delete Application
+    document.getElementById('deleteApplication').addEventListener('click', () => {
+        if (currentApplicationElement && confirm(`Are you sure you want to PERMANENTLY delete the application for ${currentApplicationElement.getAttribute('data-candidate-name')}? This action cannot be undone.`)) {
+            alert('Application Permanently Deleted!');
+            
+            currentApplicationElement.remove();
+            applicationModal.style.display = 'none';
+            currentApplicationElement = null;
+            filterApplications();
+        }
+    });
+    
+    // --- General Frontend Interaction Logic (Remaining functions unchanged) ---
+    
+    // Global close dropdown handler
+    window.addEventListener('click', (event) => {
+        const profileMenu = document.getElementById('profileMenu');
+        const profileAvatar = document.getElementById('profileAvatar');
+        
+        if (profileMenu && !event.target.matches('#profileAvatar') && !profileMenu.contains(event.target)) {
+            if (profileMenu.classList.contains('active')) {
+                profileMenu.classList.remove('active');
+            }
+        }
+    });
+
+    
+    // Mobile Menu Toggle Logic
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+    
+    menuToggle.addEventListener('click', () => {
+        sidebarMenu.classList.toggle('open');
+    });
+    
+    // Close sidebar when a link is clicked
+    sidebarMenu.querySelectorAll('a').forEach(anchor => {
+        anchor.addEventListener('click', () => {
+            sidebarMenu.classList.remove('open');
+        });
+    });
+
+    // 3. Candidate Search Logic (Simulated - UPDATED)
+    document.getElementById('jobSearchForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const selectedRole = document.getElementById('jobRole').value;
+        const resultsContainer = document.querySelector('#candidateResults .candidate-list');
+        document.getElementById('selectedRole').textContent = selectedRole;
+        
+        if (!selectedRole) {
+            alert('Please select a job role.');
+            return;
+        }
+
+        const mockCandidates = [
+            { name: 'Alice Johnson', score: 92, lastAssessment: '2 days ago' },
+            { name: 'Bob Smith', score: 88, lastAssessment: '1 week ago' },
+            { name: 'Charlie Brown', score: 75, lastAssessment: '1 month ago' }
+        ];
+
+        resultsContainer.innerHTML = ''; 
+
+        if (mockCandidates.length > 0) {
+            mockCandidates.forEach(candidate => {
+                const li = document.createElement('li');
+                li.setAttribute('data-candidate-name', candidate.name);
+                li.innerHTML = `
+                    <div class="candidate-info">
+                        <h3>${candidate.name}</h3>
+                        <p>Last Assessment: ${candidate.lastAssessment}</p>
+                    </div>
+                    <div class="candidate-score" style="color: #f7b731;">${candidate.score}%</div>
+                    <button class="btn view-profile-btn" style="width: auto; padding: 5px 15px;">View Full Profile</button>
+                `;
+                resultsContainer.appendChild(li);
+            });
+            attachViewProfileHandlers(); // ATTACH HANDLERS HERE
+        } else {
+            resultsContainer.innerHTML = '<p style="color: #bbb;">No candidates found for this job role.</p>';
+        }
+
+        alert(`Displaying top candidates for ${selectedRole}.`);
+    });
+
+    // 4. Scroll Hash Clearing Logic
+    document.querySelectorAll('.nav-links a, .sidebar-menu a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const targetId = this.getAttribute('href');
+            if (targetId && targetId.startsWith('#')) {
+                setTimeout(() => {
+                    if (window.history.replaceState) {
+                        window.history.replaceState(null, null, ' ');
+                    } else {
+                        window.location.hash = '';
+                    }
+                }, 700); 
+            }
+        });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post New Job | Skillcheck</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-page">
+  <div class="form-container">
+    <h2>Post New Job Opening</h2>
+    <p>Define the requirements for the candidate profile you are seeking.</p>
+    
+    <form id="postJobForm">
+      
+      <label for="jobTitle">Job Title:</label>
+      <input type="text" id="jobTitle" placeholder="e.g., Senior Full Stack Developer" required>
+
+      <label for="location">Job Location:</label>
+      <input type="text" id="location" placeholder="e.g., Remote (India) or Bangalore, KA" required>
+
+      <label for="salary">Salary Range (Annual):</label>
+      <input type="text" id="salary" placeholder="e.g., ₹12L - ₹18L PA" required>
+      
+      <label for="roleType">Role Type:</label>
+      <select id="roleType" required>
+        <option value="">Select Type</option>
+        <option value="fulltime">Full-Time</option>
+        <option value="parttime">Part-Time</option>
+        <option value="contract">Contract</option>
+      </select>
+
+      <label for="description">Job Description:</label>
+      <textarea id="description" rows="4" placeholder="Briefly describe the core responsibilities and company culture." required></textarea>
+
+      <label for="requiredSkills">Required Skills (Keywords):</label>
+      <textarea id="requiredSkills" rows="3" placeholder="e.g., Python, Node.js, React, MongoDB (separated by commas)" required></textarea>
+      
+      <label for="minScore">Minimum Score Requirement:</label>
+      <input type="number" id="minScore" min="50" max="100" placeholder="Minimum competency score (e.g., 75)" required>
+
+      <button type="submit" class="btn">Publish Job</button>
+      <button type="button" class="btn secondary" onclick="window.location.href='main2.html#jobs'">Cancel</button>
+
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('postJobForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const jobTitle = document.getElementById('jobTitle').value;
+      const requiredSkills = document.getElementById('requiredSkills').value;
+      
+      // **BACKEND INTERACTION POINT:** This is where an AJAX request would send the 
+      // recruiter's verified ID and all job data to the backend API for posting.
+      
+      alert(`Job "${jobTitle}" published successfully! Required Skills: ${requiredSkills}.`);
+      
+      // After success, redirect back to the recruiter dashboard's job posts section
+      window.location.href = 'main2.html#jobs';
+    });
+  </script>
+</body>
+</html>

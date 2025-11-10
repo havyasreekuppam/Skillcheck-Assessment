@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recruiter Setup | Skillcheck</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h2>Recruiter Setup</h2>
+    <p>Please verify your HR status to proceed.</p>
+    <form>
+      <label for="company">Company Name:</label>
+      <input type="text" id="company" required>
+
+      <label for="skills">Job Role Skills (for quick matching):</label>
+      <textarea id="skills" placeholder="e.g. Python, Data Science, Cloud" required></textarea>
+
+      <label for="companyid">Company ID (for verification):</label>
+      <input type="text" id="companyid" placeholder="Enter Company Registration ID" required>
+      
+      <label>Aadhar Verification (via Digilocker - *Simulated*):</label>
+      <button type="button" class="btn" style="background-color: #007bff; margin-top: 5px;">Verify via Digilocker</button>
+
+      <label for="idcard">Upload HR Id Image:</label>
+      <input type="file" id="idcard" accept="image/*,application/pdf" required>
+
+      <button class="btn" type="submit">Complete Setup</button>
+    </form>
+  </div>
+  <script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // **BACKEND INTERACTION POINT:** This is where you'd upload files and verify data.
+        
+        alert('Recruiter profile completed and verification pending! Redirecting to dashboard.');
+        window.location.href = 'main2.html'; // Go to recruiter dashboard after submission
+    });
+  </script>
+</body>
+</html>

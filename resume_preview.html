@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Preview</title>
+  <style>
+    @page {
+      margin: 0;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', serif;
+      color: black;
+      background-color: white;
+      width: 100%;
+      height: 100%;
+    }
+
+    .resume-container {
+      width: 210mm; /* A4 width */
+      min-height: 297mm; /* A4 height */
+      padding: 20mm;
+      margin: 0 auto;
+      border: 1px solid black;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin: 0;
+      text-transform: capitalize;
+    }
+
+    .contact {
+      text-align: center;
+      font-size: 13px;
+      margin: 6px 0 15px 0;
+      word-wrap: break-word;
+    }
+
+    h2 {
+      font-size: 16px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+
+    p, li {
+      font-size: 13px;
+      margin: 3px 0;
+      line-height: 1.4;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .project {
+      margin-top: 10px;
+    }
+
+    .project b {
+      text-transform: uppercase;
+    }
+
+    button {
+      display: block;
+      margin: 25px auto 10px;
+      background: black;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="resume-container" id="resumeContent">
+    <h1 id="name"></h1>
+    <div class="contact">
+      <span id="email"></span> | 
+      <span id="phone"></span> | 
+      <span id="linkedin"></span> | 
+      <span id="github"></span>
+    </div>
+
+    <h2>Professional Summary</h2>
+    <p id="summary"></p>
+
+    <h2>Education</h2>
+    <div id="education"></div>
+
+    <h2>Technical Skills</h2>
+    <ul id="skills"></ul>
+
+    <h2>Certifications</h2>
+    <ul id="certifications"></ul>
+
+    <h2>Projects</h2>
+    <div id="projects"></div>
+  </div>
+
+  <button onclick="downloadPDF()">Download as PDF</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    const data = JSON.parse(localStorage.getItem('resumeData') || '{}');
+
+    // Basic Info
+    document.getElementById('name').innerText = data.name || '';
+    document.getElementById('email').innerText = data.email || '';
+    document.getElementById('phone').innerText = data.phone || '';
+    document.getElementById('linkedin').innerText = data.linkedin || '';
+    document.getElementById('github').innerText = data.github || '';
+
+    // Summary
+    document.getElementById('summary').innerText = data.summary || 'No summary provided.';
+
+    // Education
+    const eduContainer = document.getElementById('education');
+    if (data.education && (data.education.degree || data.education.inter || data.education.school)) {
+      if (data.education.degree)
+        eduContainer.innerHTML += `<p><b>Degree:</b> ${data.education.degree}</p>`;
+      if (data.education.inter)
+        eduContainer.innerHTML += `<p><b>Intermediate:</b> ${data.education.inter}</p>`;
+      if (data.education.school)
+        eduContainer.innerHTML += `<p><b>Schooling:</b> ${data.education.school}</p>`;
+    } else {
+      eduContainer.innerHTML = "<p>No education details added.</p>";
+    }
+
+    // Technical Skills
+    const skillList = document.getElementById('skills');
+    if (data.skills && (data.skills.programming || data.skills.tools || data.skills.frameworks)) {
+      if (data.skills.programming)
+        skillList.innerHTML += `<li><b>Programming Languages:</b> ${data.skills.programming}</li>`;
+      if (data.skills.tools)
+        skillList.innerHTML += `<li><b>Tools:</b> ${data.skills.tools}</li>`;
+      if (data.skills.frameworks)
+        skillList.innerHTML += `<li><b>Libraries/Frameworks:</b> ${data.skills.frameworks}</li>`;
+    } else {
+      skillList.innerHTML = "<li>No technical skills added.</li>";
+    }
+
+    // Certifications
+    const certList = document.getElementById('certifications');
+    if (data.certifications && data.certifications.length > 0) {
+      data.certifications.forEach(cert => {
+        certList.innerHTML += `<li>${cert}</li>`;
+      });
+    } else {
+      certList.innerHTML = "<li>No certifications added.</li>";
+    }
+
+    // Projects
+    const projContainer = document.getElementById('projects');
+    if (data.projects && data.projects.length > 0) {
+      data.projects.forEach(p => {
+        const div = document.createElement('div');
+        div.classList.add('project');
+        div.innerHTML = `<b>${p.title}</b><br><p>${p.desc}</p>`;
+        projContainer.appendChild(div);
+      });
+    } else {
+      projContainer.innerHTML = "<p>No projects added.</p>";
+    }
+
+    // Download PDF Function
+    function downloadPDF() {
+      const element = document.getElementById('resumeContent');
+      const opt = {
+        margin:       [0, 0, 0, 0],
+        filename:     'Resume.pdf',
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+
+</body>
+</html>

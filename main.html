@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Dashboard | Skillcheck</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+    /* ✅ UPDATED NAVBAR CSS: Single row with "More" dropdown */
+    .navbar {
+      background: #1c1f2b;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* This spaces the 3 children */
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* Container for left-aligned items (profile) */
+    .nav-left {
+      display: flex; 
+    }
+    /* Container for right-aligned items (nav links) */
+    .nav-right {
+      display: flex; 
+    }
+    
+    .nav-links {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+      gap: 25px; 
+    }
+
+    .brand-center {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .nav-links a {
+      color: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      transition: 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover {
+      color: #4cafef;
+      transform: scale(1.03);
+    }
+    
+    .profile-dropdown {
+      position: relative;
+    }
+
+    /* ✅ FIXED Profile Avatar: Smaller and Circular */
+    .profile-avatar {
+      background: #4a90e2;
+      color: #fff;
+      /* padding: 10px 16px; */ /* REMOVED uneven padding */
+      width: 36px; /* ADDED: Set explicit width */
+      height: 36px; /* ADDED: Set equal height */
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px; /* Adjusted font size */
+      display: flex; /* ADDED: To center text */
+      align-items: center; /* ADDED: To center text */
+      justify-content: center; /* ADDED: To center text */
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      left: 0; 
+      top: 45px; /* Positioned below the new avatar */
+      background: #fff;
+      color: #333;
+      display: none; /* HIDDEN by default */
+      flex-direction: column;
+      padding: 10px 0;
+      border-radius: 8px;
+      width: 150px;
+      z-index: 1001;
+    }
+
+    /* ADDED .active class to be toggled by JS */
+    .dropdown-menu.active {
+      display: flex;
+    }
+
+    .dropdown-menu .dropdown-header {
+      padding: 8px 12px;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      margin: 0 0 5px 0;
+    }
+
+    .dropdown-menu a {
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      color: black;
+      display: block;
+      margin: 0 5px;
+    }
+
+    .dropdown-menu a:hover {
+      background: #eee;
+    }
+
+    /* ✅ NEW: Styles for the "More" dropdown */
+    .nav-dropdown {
+      position: relative;
+    }
+    
+    .nav-dropdown .dropdown-menu {
+      left: auto; /* Unset left */
+      right: 0; /* Align to the right */
+      width: 160px; /* Bit wider for icons */
+    }
+
+    .nav-dropdown .dropdown-menu a {
+      color: black;
+      padding: 8px 12px;
+      margin: 0 5px;
+      border-radius: 6px;
+    }
+    
+    .nav-dropdown .dropdown-menu a:hover {
+      background: #eee;
+    }
+    
+    #moreNavToggle i {
+      margin-left: 5px; /* Space for the caret icon */
+    }
+    /* End of new styles */
+
+
+    /* ✅ Remaining original CSS untouched */
+    .assessment-result {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-top: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .assessment-result h3 { color: #333; }
+
+    .score-bar {
+      background: #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 10px 0;
+      height: 24px;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4caf50, #81c784);
+      color: white;
+      text-align: center;
+      line-height: 24px;
+      font-weight: bold;
+      transition: width 1s ease;
+    }
+
+    .performance-tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .excellent { background-color: #4CAF50; }
+    .good { background-color: #2196F3; }
+    .average { background-color: #FFC107; }
+    .poor { background-color: #F44336; }
+
+    .latest-score {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #fdfbfb;
+      font-weight: bold;
+    }
+
+    .assessment-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .assessment-header h3 { margin: 0; }
+
+    .score-near-button {
+      font-size: 16px;
+      color: #fcfafa;
+      font-weight: 600;
+      margin-right: 15px;
+    }
+
+    .assessment-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    #resume-score-checker input[type="file"] {
+      margin: 10px 0;
+      font-family: inherit;
+    }
+
+    #atsResult {
+      margin-top: 20px;
+      background: #000;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    #atsResult,
+    #atsResult *:not(.ats-score-fill) {
+      color: #fff !important;
+    }
+
+    .ats-score-bar {
+      background: #ddd;
+      border-radius: 25px;
+      overflow: hidden;
+      margin: 10px 0;
+      height: 25px;
+    }
+
+    .ats-score-fill {
+      background: #1f3c88;
+      color: #fff;
+      height: 100%;
+      line-height: 25px;
+      text-align: center;
+      border-radius: 25px;
+      transition: width 1s ease;
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      background: #1f3c88;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .tag i {
+      margin-left: 6px;
+      cursor: pointer;
+      background: #fff;
+      color: #1f3c88;
+      border-radius: 50%;
+      padding: 2px 4px;
+      font-size: 10px;
+    }
+
+    /* ✅ Footer styles (from style.css) */
+    .main-footer {
+      background-color: #1f1c2c;
+      color: #ccc;
+      padding: 40px 20px;
+      margin-top: 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    .footer-brand {
+      flex: 1;
+      min-width: 200px;
+    }
+    .footer-brand h3 {
+      color: #fff;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    .footer-brand .copyright {
+      font-size: 12px;
+      margin-top: 20px;
+      color: #888;
+    }
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      min-width: 150px;
+    }
+    .footer-links h4 {
+      color: #fff;
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-bottom: 2px solid #4e4376;
+      padding-bottom: 5px;
+      width: fit-content;
+    }
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      margin-bottom: 8px;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: #8be9fd; /* Light blue accent */
+    }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid #3a3f51;
+      margin-top: 20px;
+    }
+    .copyright {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    
+    <div class="nav-left">
+      <ul class="nav-links"> 
+        <li class="profile-dropdown">
+          <div class="profile-avatar" id="profileAvatar">JD</div>
+          <div class="dropdown-menu" id="profileMenu">
+            <p class="dropdown-header">John Doe</p> <a href="#settings" id="changeGoal">🎯 Change Goal</a>
+            <a href="#settings" id="editProfile">✏️ Edit Profile</a>
+            <a href="login.html">🚪 Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="brand-center">Skillcheck</div>
+
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#Resume Score">🏠 Dashboard</a></li>
+        <li><a href="#assessments">📝 Assessments</a></li>
+        <li><a href="#recommended-courses">📚 Courses</a></li>
+        
+        <li class="nav-dropdown">
+          <a href="#" id="moreNavToggle">More <i class="fas fa-caret-down"></i></a>
+          <div class="dropdown-menu" id="moreNavMenu">
+            <a href="#jobs-listing">💼 Jobs</a>
+            <a href="#resume-score-checker">📄 Resume Score</a>
+            <a href="resume_builder.html">📝 Make Resume</a>
+          </div>
+        </li>
+        </ul>
+    </div>
+    
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+    </nav>
+
+  <main>
+    <section id="Resume Score">
+      <h2>Resume Score </h2>
+      <p>Your resume score:</p>
+
+      <div id="atsDashboardScoreContainer" class="score-card" style="display:none;">
+        <h1 id="atsDashboardScore">0%</h1>
+        <p id="atsDashboardFeedback">No resume score available yet.</p>
+      </div>
+
+      <div id="uploadResumePrompt" class="score-card" style="display:none;">
+        <p>You haven't uploaded a resume yet!</p>
+        <button class="btn" onclick="scrollToATS()">Upload Resume to View Score</button>
+      </div>
+    </section>
+
+    <section id="assessments">
+      <h2>Assessments</h2>
+      <p>Evaluate your learning and track your progress.</p>
+
+      <div class="assessment-container">
+        <div class="assessment-box">
+          <div class="assessment-header">
+            <h3>Python Assessment</h3>
+            <span class="score-near-button" id="nearButtonScore">Your Latest Score: --%</span>
+          </div>
+
+          <p>Course: Python Programming</p>
+
+          <div class="assessment-actions">
+            <button class="btn" id="startAssessment">Start New Assessment</button>
+          </div>
+
+          <p class="latest-score" id="latestScoreText">Latest Score: --%</p>
+
+          <div class="score-bar" style="margin-top: 8px;">
+            <div class="score-fill" id="latestScoreBar" style="width: 0%;">0%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+f
+    <section id="recommended-courses">
+      <h2>Recommended Courses</h2>
+      <p>Based on your current goal and skill progress:</p>
+
+      <div class="assessment-container">
+        <div class="assessment-box">
+          <h3>Frontend Development with React</h3>
+          <p>Master components, hooks, and UI design fundamentals.</p>
+          <button class="btn" onclick="window.open('https://www.coursera.org/learn/react-basics', '_blank')">View Course</button>
+        </div>
+
+        <div class="assessment-box">
+          <h3>Backend with Django</h3>
+          <p>Build scalable applications using Python and Django.</p>
+          <button class="btn" onclick="window.open('https://www.udemy.com/course/python-and-django-full-stack-web-developer-bootcamp/', '_blank')">View Course</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="jobs-listing">
+      <h2>Job Listings</h2>
+      <p>Explore job roles matching your skills and learning progress:</p>
+
+      <div class="assessment-container">
+        <div classs="assessment-box">
+          <h3>Junior Web Developer</h3>
+          <p>Company: TechNova Solutions<br>Location: Bangalore</p>
+          <button class="btn">Apply Now</button>
+        </div>
+
+        <div classs="assessment-box">
+          <h3>Full Stack Developer Intern</h3>
+          <p>Company: Innovent Technologies<br>Location: Remote</p>
+          <button class="btn">Apply Now</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resume-score-checker">
+      <h2>ATS Resume Score Checker</h2>
+      <p>Check how well your resume matches your desired job role.</p>
+
+      <div class="assessment-box">
+        <input type="file" id="resumeFile" accept=".txt,.pdf" />
+
+        <label><strong>Select Job Role(s)</strong></label>
+        <select id="jobDescription" style="width:100%">
+          <option disabled selected>Choose a job role</option>
+          <option>Software Developer</option>
+          <option>Software Developer Intern</option>
+          <option>Full Stack Developer</option>
+          <option>Backend Developer</option>
+          <option>Frontend Developer</option>
+          <option>Web Developer</option>
+          <option>Java Developer</option>
+          <option>Python Developer</option>
+          <option>Machine Learning Engineer</option>
+          <option>Data Scientist</option>
+          <option>Cloud Engineer</option>
+          <option>DevOps Engineer</option>
+          <option>AI Engineer</option>
+          <option>Mobile App Developer</option>
+          <option>Cybersecurity Analyst</option>
+          <option>Automation Test Engineer</option>
+        </select>
+
+        <div id="selectedRoles" class="tags-container"></div>
+
+        <button class="btn" id="checkATSScore">Check Resume Score</button>
+
+        <div id="atsResult" style="display:none;">
+          <h3>Your ATS Score:</h3>
+          <div class="ats-score-bar">
+            <div class="ats-score-fill" id="atsScoreFill" style="width:0%">0%</div>
+          </div>
+          <p id="atsFeedback"></p>
+          <p><strong>Matched:</strong> <span id="matchedWords"></span></p>
+          <p><strong>Missing:</strong> <span id="missingWords"></span></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <div class="sidebar-menu" id="sidebarMenu">
+    <a href="#Resume Score">🏠 Dashboard</a>
+    <a href="#assessments">📝 Assessments</a>
+    <a href="#recommended-courses">📚 Courses</a>
+    <a href="#jobs-listing">💼 Jobs</a>
+    <a href="#resume-score-checker">📄 Resume Score</a>
+    <a href="resume_builder.html">📝 Make Resume</a>
+  </div>
+  <footer class="main-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h3>Skillcheck</h3>
+        <p>Your Skills, Your Score, Your Future.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Company</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+        <a href="#">FAQ</a>
+      </div>
+      <div class="footer-links">
+        <h4>Legal</h4>
+        <a href="#">Terms and Conditions</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="copyright">&copy; 2025 Skillcheck. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function loadUserProfile() {
+      const userDataString = localStorage.getItem('currentUser');
+      let user = { name: 'John Doe', initials: 'JD', userGoal: 'Web Developer' };
+      if (userDataString) user = JSON.parse(userDataString);
+      
+      document.getElementById('profileAvatar').textContent = user.initials || 'JD';
+      
+      const dropdownHeader = document.querySelector('.dropdown-header');
+      if (dropdownHeader) {
+          dropdownHeader.textContent = user.name || 'John Doe';
+      }
+    }
+    loadUserProfile();
+
+    // === ADDED SCRIPT FOR MOBILE MENU ===
+    // Mobile Menu Toggle Logic
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+    
+    if (menuToggle && sidebarMenu) { // Check if elements exist
+        menuToggle.addEventListener('click', () => {
+            sidebarMenu.classList.toggle('open');
+        });
+        
+        // Close sidebar when a link is clicked
+        sidebarMenu.querySelectorAll('a').forEach(anchor => {
+            anchor.addEventListener('click', () => {
+                sidebarMenu.classList.remove('open');
+            });
+        });
+    }
+    // === END ADDITION ===
+
+
+    // ✅ Add click event listener for profile dropdown
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileMenu = document.getElementById('profileMenu');
+
+    profileAvatar.addEventListener('click', (event) => {
+      event.stopPropagation(); 
+      profileMenu.classList.toggle('active');
+    });
+
+    // ✅ NEW: Add click event listener for "More" dropdown
+    const moreToggle = document.getElementById('moreNavToggle');
+    const moreMenu = document.getElementById('moreNavMenu');
+
+    moreToggle.addEventListener('click', (event) => {
+      event.preventDefault(); // Stop link from navigating
+      event.stopPropagation(); 
+      moreMenu.classList.toggle('active');
+    });
+
+    // ✅ UPDATED: Add listener to close BOTH menus when clicking outside
+    window.addEventListener('click', (event) => {
+      // Close profile menu
+      if (profileMenu.classList.contains('active') && !profileAvatar.contains(event.target)) {
+        profileMenu.classList.remove('active');
+      }
+      // Close "More" menu
+      if (moreMenu.classList.contains('active') && !moreToggle.contains(event.target)) {
+        moreMenu.classList.remove('active');
+      }
+    });
+    // (End of new script)
+
+
+    document.getElementById("startAssessment").addEventListener("click", () => {
+      window.location.href = "start_assessment.html";
+    });
+
+    const jobSelect = document.getElementById("jobDescription");
+    const tagContainer = document.getElementById("selectedRoles");
+    let selectedRoles = [];
+
+    jobSelect.addEventListener("change", () => {
+      const role = jobSelect.value;
+      if (role && !selectedRoles.includes(role)) {
+        selectedRoles.push(role);
+        renderTags();
+      }
+      jobSelect.selectedIndex = 0;
+    });
+
+    function removeRole(role) {
+      selectedRoles = selectedRoles.filter(r => r !== role);
+      renderTags();
+    }
+
+    function renderTags() {
+      tagContainer.innerHTML = "";
+      selectedRoles.forEach(role => {
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.innerHTML = `${role} <i onclick="removeRole('${role}')" class="fas fa-times"></i>`;
+        tagContainer.appendChild(tag);
+      });
+    }
+
+    /* ✅ CHECK ATS SCORE - Backend call + save to dashboard */
+    document.getElementById("checkATSScore").addEventListener("click", async () => {
+
+      const file = document.getElementById("resumeFile").files[0];
+
+      if (!file) {
+        alert("Please upload resume!");
+        return;
+      }
+
+      if (selectedRoles.length === 0) {
+        alert("Select at least one job role!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("resume", file);
+      selectedRoles.forEach(role => formData.append("job_roles[]", role));
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/ats-score", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        console.log("✅ Backend data:", data);
+
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+    // ✅ SHOW RESULT IN UI
+        document.getElementById("atsResult").style.display = "block";
+        document.getElementById("atsScoreFill").style.width = data.score + "%";
+        document.getElementById("atsScoreFill").textContent = data.score + "%";
+        document.getElementById("atsFeedback").textContent = data.feedback;
+        document.getElementById("matchedWords").textContent = data.matched.join(", ");
+        document.getElementById("missingWords").textContent = data.missing.join(", ");
+
+    // ✅ Save ATS result ALSO in local storage so dashboard works
+        localStorage.setItem("atsLatestScore", data.score);
+        localStorage.setItem("atsLatestFeedback", data.feedback);
+
+        loadATSDashboardScore();
+
+      } catch (error) {
+        console.error("❌ Error calling backend:", error);
+        alert("Backend not responding. Check terminal.");
+      }
+    });
+
+
+    // ✅ UPDATED THIS FUNCTION
+    function loadLatestPythonScore() {
+      const latestScore = localStorage.getItem("pythonLatestScore");
+      const nearButtonScore = document.getElementById("nearButtonScore");
+      const latestScoreText = document.getElementById("latestScoreText");
+      const latestScoreBar = document.getElementById("latestScoreBar");
+
+      if (!latestScore) {
+        // Changed "Last Score" to "Latest Score"
+        nearButtonScore.textContent = "Your Latest Score: --%";
+        latestScoreText.textContent = "Latest Score: --%";
+        latestScoreBar.style.width = "0%";
+        latestScoreBar.textContent = "0%";
+        return;
+      }
+
+      // Changed "Last Score" to "Latest Score"
+      nearButtonScore.textContent = `Your Latest Score: ${latestScore}%`;
+      latestScoreText.textContent = `Latest Score: ${latestScore}%`;
+      latestScoreBar.style.width = latestScore + "%";
+      latestScoreBar.textContent = latestScore + "%";
+    }
+
+function loadATSDashboardScore() {
+  const atsScore = localStorage.getItem("atsLatestScore");
+  const atsFeedback = localStorage.getItem("atsLatestFeedback");
+
+  const scoreBox = document.getElementById("atsDashboardScoreContainer");
+  const uploadBox = document.getElementById("uploadResumePrompt");
+  const scoreText = document.getElementById("atsDashboardScore");
+  const feedbackText = document.getElementById("atsDashboardFeedback");
+
+  // Check if elements exist before using them
+  if (!scoreBox || !uploadBox || !scoreText || !feedbackText) {
+    console.error("Dashboard score elements not found!");
+    return;
+  }
+
+  if (!atsScore) {
+    scoreBox.style.display = "none";
+    uploadBox.style.display = "block";
+    return;
+  }
+
+  uploadBox.style.display = "none";
+  scoreBox.style.display = "block";
+
+  scoreText.textContent = `${atsScore}%`;
+  feedbackText.textContent = atsFeedback || "Resume scored successfully ✅";
+
+  if (atsScore >= 80) {
+    scoreText.style.color = "#4CAF50";
+  } else if (atsScore >= 60) {
+    scoreText.style.color = "#FFC107";
+  } else {
+    scoreText.style.color = "#F44336";
+  }
+}
+
+    function saveATSToDashboard(score, feedback) {
+      localStorage.setItem("atsLatestScore", score);
+      localStorage.setItem("atsLatestFeedback", feedback);
+      loadATSDashboardScore();
+    }
+
+    function scrollToATS() {
+      document.querySelector('#resume-score-checker').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    loadATSDashboardScore();
+    loadLatestPythonScore();
+  </script>
+
+</body>
+</html>

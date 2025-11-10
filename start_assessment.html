@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Start Assessment | Skillcheck</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background-color: #0c1220;
+      color: #f0f0f0;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      background-color: #1c1f2b;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .brand-center {
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    main {
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 80vh;
+    }
+
+    .assessment-card {
+      background-color: #1e2233;
+      border-radius: 16px;
+      padding: 2rem 3rem;
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .assessment-card h2 {
+      color: #76b7c4;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .assessment-card p {
+      color: #b3b3b3;
+      margin-bottom: 2rem;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn {
+      background-color: #4a4e69;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn.easy { background-color: #3ba55c; }
+    .btn.medium { background-color: #f39c12; }
+    .btn.hard { background-color: #e74c3c; }
+
+    .btn.easy:hover { background-color: #2ecc71; }
+    .btn.medium:hover { background-color: #f1c40f; }
+    .btn.hard:hover { background-color: #c0392b; }
+
+    /* ✅ Mixed Difficulty Button */
+    .btn.mixed { background-color: #6a5acd; }
+    .btn.mixed:hover { background-color: #7b68ee; }
+
+    .back-btn {
+      margin-top: 2rem;
+      background-color: #2d3250;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+    }
+
+    .back-btn:hover {
+      background-color: #3e446a;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="brand-center">🧠 Skillcheck – Start New Assessment</div>
+  </nav>
+
+  <main>
+    <div class="assessment-card">
+      <h2>Select Difficulty Level</h2>
+      <p>Choose how challenging you want your next skill test to be.</p>
+
+      <div class="button-container">
+        <button class="btn easy" onclick="startAssessment('easy')">Easy</button>
+        <button class="btn medium" onclick="startAssessment('medium')">Medium</button>
+        <button class="btn hard" onclick="startAssessment('hard')">Hard</button>
+        <!-- ✅ New Mixed Difficulty Button -->
+        <button class="btn mixed" onclick="startAssessment('mixed')">Mixed Mode</button>
+      </div>
+
+      <button class="btn back-btn" onclick="goBack()">← Back to Dashboard</button>
+    </div>
+  </main>
+
+  <script>
+    function startAssessment(level) {
+      if (level === 'easy') {
+        window.location.href = 'assessment_easy.html';
+      } else if (level === 'medium') {
+        window.location.href = 'assessment_medium.html';
+      } else if (level === 'hard') {
+        window.location.href = 'assessment_hard.html';
+      } else if (level === 'mixed') {
+        window.location.href = 'assessment_mixed.html'; // ✅ New Page
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'main.html';
+    }
+  </script>
+</body>
+</html>
